@@ -3,7 +3,7 @@
 #### Customer
 ```
 {
-    "uid": UUID,
+    "_id": UUID,
     "personalId": String,
     "storeID": UUID
 }
@@ -15,7 +15,7 @@
 #### Store
 ```
 {
-    "uid": UUID,
+    "_id": UUID,
     "name": String,
     "latitude": Long,
     "longitude": Long,
@@ -35,7 +35,7 @@
 #### Employee
 ```
 {
-    "uid": UUID,
+    "_id": UUID,
     "personalId": String,
     "storeId": UUID,
     "role": String
