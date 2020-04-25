@@ -1,20 +1,18 @@
-# Architecture
+# Architecture Design
 
-##### Customer
+#### Customer
 ```
 {
     "uid": UUID,
     "personalId": String,
-    "before": UUID,
     "storeID": UUID
 }
 ```
 - `uid` is automatically generated for customer
 - `personalId` is the friendly id chosen by the user
-- `before` the customer right in front of this user. A customer is first in line if `before==null`
-- `storeId` the store for which the customer is in line
+- `storeId` isthe store for which the customer is in line
 
-##### Store
+#### Store
 ```
 {
     "uid": UUID,
@@ -22,12 +20,29 @@
     "latitude": Long,
     "longitude": Long,
     "open": Int,
-    "close": Int
+    "close": Int,
+    "employees": [UUID]
 }
 ```
 - `uid` is automatically generated for the store
-- `name` the store name
-- `latitude` the latitude of the store
-- `longitude` the longitude of the store
-- `open` the opening time of the store in minutes of the day
-- `close` the closing time of the store in minutes of the day
+- `name` is the store name
+- `latitude` is the latitude of the store
+- `longitude` is the longitude of the store
+- `open` is the opening time of the store in minutes of the day
+- `close` is the closing time of the store in minutes of the day
+- `employees` is an array of employees at the store who have access to this system
+
+#### Employee
+```
+{
+    "uid": UUID,
+    "personalId": String,
+    "storeId": UUID,
+    "role": String
+}
+```
+- `uid` is automatically generated for customer
+- `personalId` is the friendly id chosen by the user
+- `storeId` is the store for which the employee works at
+- `permission` is the employees role at the store and governs their permissions on this app
+
