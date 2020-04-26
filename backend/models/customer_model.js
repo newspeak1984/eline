@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const customerSchema = new Schema({
-  username: { type: String, required: true },
-  phone: { type: String, required: true },
+  email: { type: String, unique: true, required: true, trim: true, dropDups: true },
+  username: { type: String, required: true, trim: true },
+  password: { type: String, required: true},
+  phone: { type: String, unique: true, required: true, dropDups: true },
   currentStore: { type: String, required: false },
 }, {
   timestamps: true,

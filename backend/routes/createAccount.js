@@ -3,11 +3,13 @@ let Customer = require('../models/customer_model')
 
 
 router.route('/').post((req, res) => {
+  const email = req.body.email;
   const username = req.body.username;
+  const password = req.body.password;
   const phone = req.body.phone;
-  const currentStore = null;
+  const currentStore = req.body.currentStore;
 
-  const newCustomer = new Customer({username, phone, currentStore});
+  const newCustomer = new Customer({email, username, password, phone, currentStore});
 
   newCustomer.save()
     .then(() => res.json(`${username} added!`))
