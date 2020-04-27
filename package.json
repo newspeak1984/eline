@@ -13,7 +13,7 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "concurrently \"cd backend && node server.js\" \"cd eline_client && npm start\"",
+    "start": "concurrently \"cd backend && nodemon server.js\" \"cd eline_client && npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

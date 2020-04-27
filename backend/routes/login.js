@@ -1,10 +1,21 @@
 const router = require('express').Router();
 let Store = require('../models/store_model');
+let Customer = require('../models/customer_model');
 
-router.route('/').get((req, res) => {
-  User.find()
-    .then(users => res.json(users))
-    .catch(err => res.status(400).json('Error: ' + err));
+router.route('/').post((req, res, next) => {
+  const loginEmail = req.body.loginEmail;
+  const loginPassword = req.body.loginPassword;
+  
+  Customer.authenticate(loginEmail, loginPassword, function (error, user) {
+    if (error || !user) {
+      var err = new Error('Wrong email or password.');
+      err.status = 401;
+      return next(err);
+    } else {
+      req.session.userId = user._id;
+      return res.send('Successful Login');
+    }
+  });
 });
 
 router.route('/add').post((req, res) => {
