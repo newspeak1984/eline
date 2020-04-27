@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
+// add try catch? also should whitelist more IP addresses when this goes to prod
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true} );
 const connection = mongoose.connection;
 connection.once('open', () => {
@@ -20,11 +21,13 @@ connection.once('open', () => {
 const homeRouter = require('./routes/home');
 const loginRouter = require('./routes/login');
 const createAccountRouter = require('./routes/createAccount');
+const createStoreRouter = require('./routes/createStore');
 const adminRouter = require('./routes/admin');
 
 app.use('/home', homeRouter);
 app.use('/login', loginRouter);
 app.use('/createAccount', createAccountRouter);
+app.use('/createStore', createStoreRouter);
 app.use('/admin', adminRouter);
 
 app.listen(port, () =>{
