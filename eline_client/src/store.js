@@ -9,7 +9,7 @@ export default function configureStore(persistedState) {
     const store = createStore(
         rootReducer,
         persistedState,
-        applyMiddleware(thunkMiddleware, logger, crashReporter)
+        applyMiddleware(thunkMiddleware)
     );
     store.dispatch(verifyAuth());
     return store;
