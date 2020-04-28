@@ -31,6 +31,8 @@ class Login extends React.Component{
             loginPassword: this.state.loginPassword,
         }
 
+        axios.defaults.withCredentials = true;
+
         axios.post('http://localhost:5000/login/', credentials)
         .then(res => {
             console.log(res);

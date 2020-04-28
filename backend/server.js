@@ -9,7 +9,11 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+    origin:['http://localhost:5000', 'http://localhost:3000'],
+    methods:['GET','POST'],
+    credentials: true // enable set cookie
+}));
 app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
@@ -29,6 +33,7 @@ app.use(session({
     saveUninitialized: true,
     store: new MemoryStore(),
     cookie: {
+        // change this later when we deploy
         //secure: true, 
         maxAge: 60*60*1000
     }

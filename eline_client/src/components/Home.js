@@ -7,7 +7,7 @@ class Home extends React.Component{
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/login/verifySession')
+        axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
         .then(res => {
             console.log(res);
         }).catch(e => {
