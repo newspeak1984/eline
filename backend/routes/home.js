@@ -8,9 +8,6 @@ router.route('/').get((req, res, next) => {
 });
 
 router.route('/:storeName/add_to_queue').get((req, res) => {
-  //get queue url from mongo based on store id
-  // send message to the queue
-
   const storeName = req.params.storeName;
   // TODO: get actual customerId (maybe form state?)
   const customerId = "email@email.com";

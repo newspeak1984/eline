@@ -8,8 +8,6 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/get_next').get(async (req, res) => {
-  // receive and delete message
-  // if success, then return some customer identifier (message.customer)
   const queueUrl = req.body.queueUrl;
 
   receiveMessage(queueUrl, (data) => {

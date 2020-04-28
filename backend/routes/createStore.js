@@ -17,6 +17,8 @@ router.route("/add").post(async (req, res) => {
   // TODO: make sure the mongo record is successfully made before creating queue
   // TODO: add unique name to the queue name to handle chains
 
+  // TODO: maybe don't do this automatically
+  // TODO: secure this endpoint
   createQueue(name, (data) => {
     console.log('creating queue', data);
     let queueUrl = data.QueueUrl;
