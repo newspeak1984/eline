@@ -1,8 +1,18 @@
 import React from "react";
+import axios from 'axios';
 
 class Home extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
+    }
+
+    componentDidMount(){
+        axios.get('http://localhost:5000/login/verifySession')
+        .then(res => {
+            console.log(res);
+        }).catch(e => {
+            console.log(e);
+        });
     }
     render(){
         return(

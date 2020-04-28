@@ -20,13 +20,18 @@ connection.once('open', () => {
 });
 
 //use sessions for tracking logins
+app.set('trust proxy', 1);
+var MemoryStore =session.MemoryStore;
 app.use(session({
-    secret: 'work hard',
-    resave: true,
-    saveUninitialized: false,
-    store: new MongoStore({
-      mongooseConnection: connection
-    })
+    name : 'backend.sid',
+    secret: 'yah yeet',
+    resave: false,
+    saveUninitialized: true,
+    store: new MemoryStore(),
+    cookie: {
+        //secure: true, 
+        maxAge: 60*60*1000
+    }
   }));
 
 const homeRouter = require('./routes/home');
