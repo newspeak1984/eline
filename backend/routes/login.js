@@ -13,7 +13,10 @@ router.route('/').post((req, res, next) => {
       return next(err);
     } else {
       req.session.userId = user._id;
-      return res.send('Successful Login');
+      return res.send({
+        user: user,
+        logingEmail: loginEmail
+      });
     }
   });
 });

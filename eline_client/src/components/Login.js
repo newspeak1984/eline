@@ -1,7 +1,12 @@
-import React from "react";
-import axios from 'axios'
+import React, { Component } from "react";
+import axios from 'axios';
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import { loginUser } from "../actions";
 
-class Login extends React.Component{
+import Button from "@material-ui/core/Button";
+
+class Login extends Component {
     constructor(props){
         super(props);
 
@@ -11,56 +16,48 @@ class Login extends React.Component{
             successfulLogin: false
         }
     }
-    onChangeLoginEmail = (e) => {
+    handleChangeLogingEmail = (e) => {
         this.setState({
             loginEmail: e.target.value
         });
     }
 
-    onChangeLoginPassword = (e) => {
+    handleChangeLoginPassword = (e) => {
         this.setState({
             loginPassword: e.target.value
         });
     }
 
-    onSubmit = (e) => {
+    handleSubmit = (e) => {
         e.preventDefault();
+
+        const { dispatch } = this.props;
 
         const credentials = {
             loginEmail: this.state.loginEmail,
             loginPassword: this.state.loginPassword,
         }
 
-        axios.post('http://localhost:5000/login/', credentials)
-        .then(res => {
-            console.log(res);
-            this.setState({
-                successfulLogin: true
-            })
-            window.location = '/home/'
-        }).catch(e => {
-            console.log(e);
-        });
+        dispatch(loginUser(credentials))
 
-        this.setState({
-            loginEmail: '',
-            loginPassword: ''
-        })
-
+        // this.setState({
+        //     loginEmail: '',
+        //     loginPassword: ''
+        // })
     }
 
     render(){
+        const { isAuthenticated } = this.props;
         return(
             <div>
                 <h3>Login</h3>
-                <form onSubmit={this.onSubmit}>
+                <form>
                     <div className="form-group">
                         <label>Email: </label>
                         <input type="email"
                             required
                             className="form-control"
-                            value={this.state.loginEmail}
-                            onChange={this.onChangeLoginEmail}
+                            onChange={this.handleChangeLogingEmail}
                         />
                     </div>
                     <div className="form-group">
@@ -69,12 +66,11 @@ class Login extends React.Component{
                             id="password"
                             required
                             className="form-control"
-                            value={this.state.loginPassword}
-                            onChange={this.onChangeLoginPassword}
+                            onChange={this.handleChangeLoginPassword}
                         />
                     </div>
                     <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
+                        <Button onClick={this.handleSubmit} variant="outlined">Submit</Button>
                     </div>
                 </form>
             </div>
@@ -82,4 +78,13 @@ class Login extends React.Component{
     }
 }
 
-export default Login;
+function mapStateToProps(state) {
+    return {
+        isLoggingIn: state.auth.isLoggingIn,
+        loginError: state.auth.loginError,
+        isAuthenticated: state.auth.isAuthenticated,
+        user: state.auth.user
+    };
+}
+
+export default (connect(mapStateToProps)(Login));
