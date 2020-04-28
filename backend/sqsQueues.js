@@ -53,7 +53,7 @@ function getQueueUrl(queueName, fn) {
   });
 }
 
-function sendMessage(storeQueueUrl, storeId, customerId, fn) {
+function sendMessage(storeQueueUrl, storeId, customerId) {
   let sqsOrderData = {
       MessageAttributes: {
         "Customer": {
@@ -71,13 +71,12 @@ function sendMessage(storeQueueUrl, storeId, customerId, fn) {
 
   sendSqsMessage.then((data) => {
       console.log(`SUCCESS: ${data}`);
-      fn(data);
   }).catch((err) => {
       console.log(`ERROR: ${err}`);
   })
 }
 
-function recieveAndDeleteMessage(storeQueueUrl, fn) {
+function receiveMessage(storeQueueUrl, fn) {
   let params = {
     AttributeNames: [
        "SentTimestamp"
@@ -94,26 +93,33 @@ function recieveAndDeleteMessage(storeQueueUrl, fn) {
    sqs.receiveMessage(params, function(err, data) {
      if (err) {
        console.log("Receive Error", err);
+       fn(null);
      } else if (data.Messages) {
-       var deleteParams = {
-         QueueUrl: storeQueueUrl,
-         ReceiptHandle: data.Messages[0].ReceiptHandle
-       };
-       sqs.deleteMessage(deleteParams, function(err, data) {
-         if (err) {
-           console.log("Delete Error", err);
-         } else {
-           console.log("Message Deleted", data);
-           // TODO make sure this sends all the needed data
-           fn(data);
-         }
-       });
+        console.log('successful retrieve');
+       fn(data);
      }
    });
+}
+
+function deleteMessage(storeQueueUrl, data, fn) {
+  let deleteParams = {
+    QueueUrl: storeQueueUrl,
+    ReceiptHandle: data.Messages[0].ReceiptHandle
+  };
+  sqs.deleteMessage(deleteParams, function(err, data) {
+    if (err) {
+      console.log("Delete Error", err);
+      fn(false);
+    } else {
+      console.log("Message Deleted", data);
+      fn(true);
+    }
+  });
 }
 
 module.exports.createQueue = createQueue;
 module.exports.listQueues = listQueues;
 module.exports.getQueueUrl = getQueueUrl;
 module.exports.sendMessage = sendMessage;
-module.exports.recieveAndDeleteMessage = recieveAndDeleteMessage;
+module.exports.receiveMessage = receiveMessage;
+module.exports.deleteMessage = deleteMessage;
