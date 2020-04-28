@@ -1,5 +1,5 @@
 import React from "react";
-import axios from 'axios'
+import axios from 'axios';
 
 class Login extends React.Component{
     constructor(props){
@@ -30,6 +30,8 @@ class Login extends React.Component{
             loginEmail: this.state.loginEmail,
             loginPassword: this.state.loginPassword,
         }
+
+        axios.defaults.withCredentials = true;
 
         axios.post('http://localhost:5000/login/', credentials)
         .then(res => {

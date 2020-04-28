@@ -68,8 +68,6 @@ class CreateAccount extends React.Component {
             currentStore: this.state.currentStore,
         }
 
-        console.log(user);
-
         axios.post('http://localhost:5000/createAccount/', user)
         .then(res => {
             console.log(res.data);
