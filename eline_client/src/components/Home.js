@@ -14,10 +14,26 @@ class Home extends React.Component{
             console.log(e);
         });
     }
+
+    onEnterLine = () =>{
+        console.log('enter line');
+        //hit endpoint here to enter line
+    }
+
     render(){
         return(
-            <h1>Home Page</h1>
+            <div>
+                <h1>Welcome to eline!</h1>
+                <h2 id="waitTime">NUM</h2>
+                <button onClick={this.onEnterLine}>Enter Line</button>
+            </div>
         )
+    }
+}
+
+const styles = {
+    "button": {
+
     }
 }
 
