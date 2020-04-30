@@ -1,5 +1,7 @@
 import React from "react";
 import axios from 'axios';
+import { connect } from "react-redux";
+import { verifyAuth } from "../actions";
 
 class Home extends React.Component{
     constructor(props){
@@ -7,12 +9,8 @@ class Home extends React.Component{
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
-        .then(res => {
-            console.log(res);
-        }).catch(e => {
-            console.log(e);
-        });
+        const { dispatch } = this.props;
+        dispatch(verifyAuth());
     }
     render(){
         return(
@@ -21,4 +19,10 @@ class Home extends React.Component{
     }
 }
 
-export default Home;
+function mapStateToProps(state) {
+    return {
+        isAuthenticated: state.auth.isAuthenticated
+    };
+}
+
+export default (connect(mapStateToProps)(Home));
