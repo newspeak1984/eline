@@ -7,7 +7,7 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/get_next').get(async (req, res) => {
+router.route('/get_next').post(async (req, res) => {
   const queueUrl = req.body.queueUrl;
 
   receiveMessage(queueUrl, (data) => {

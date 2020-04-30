@@ -10,7 +10,7 @@ function createQueue(queueName, fn) {
   let params = {
     QueueName: `${queueName}.fifo`,
     Attributes: {
-      'DelaySeconds': '60',
+      'DelaySeconds': '0',
       "FifoQueue": "true"
     }
   };
