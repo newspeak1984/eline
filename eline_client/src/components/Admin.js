@@ -1,4 +1,5 @@
 import React from "react";
+import socket from "../App";
 
 class Admin extends React.Component{
     constructor(){

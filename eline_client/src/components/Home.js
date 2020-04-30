@@ -1,5 +1,6 @@
 import React from "react";
 import axios from 'axios';
+import socket from "../App";
 
 class Home extends React.Component{
     constructor(props){

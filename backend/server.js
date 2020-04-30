@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const socket = require('socket.io');
 
 require('dotenv').config(); 
 
@@ -52,6 +53,23 @@ app.use('/createAccount', createAccountRouter);
 app.use('/createStore', createStoreRouter);
 app.use('/admin', adminRouter);
 
-app.listen(port, () =>{
+var server = app.listen(port, () =>{
     console.log(`Server is running on port: ${port}`);
+});
+
+//Setup Websockets
+const io = socket(server);
+io.on('connection', (socket) =>{
+    console.log('Successful socket connection', socket.id);
+
+    socket.on('enter', (data) => {
+        //user presses button to get inline
+        //make changes to add to circular buffer with data (should contain userID)
+    });
+
+    socket.on('getNext', (data) => {
+        //admin presses get next button
+        io.sockets.emit('getNext', newData /*return whos next inline and store id*/);
+        //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
+    })
 });
