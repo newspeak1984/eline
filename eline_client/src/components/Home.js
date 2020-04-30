@@ -1,43 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import socket from "../App";
+import { socket } from "../App";
 
+function Home() {
+    const [placement, setPlacement] = useState(300);
 
-class Home extends React.Component{
-    constructor(props){
-        super(props);
-    }
-
-    componentDidMount(){
-        axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
-        .then(res => {
-            console.log(res);
-        }).catch(e => {
-            console.log(e);
+    useEffect(() => {
+        socket.on("getNext", () => {
+            setPlacement(placement - 1);
         });
-    }
-
-    onEnterLine = () =>{
-        console.log('enter line');
         
-        //hit endpoint here to enter line
+        axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
+            .then(res => {
+            console.log(res);
+            }).catch(e => {
+            console.log(e);
+            });
+    })
+
+    const onEnterLine = () =>{
+        console.log('enter line');
+        socket.emit('enter', "DATA");
+        // TODO: send customer and store info
     }
 
-    render(){
-        return(
-            <div>
-                <h1>Welcome to eline!</h1>
-                <h2 id="waitTime">NUM</h2>
-                <button id="getInLine" onClick={this.onEnterLine}>Enter Line</button>
-            </div>
-        )
-    }
-}
-
-const styles = {
-    "button": {
-
-    }
+    return (
+        <div>
+            <h1>Welcome to eline!</h1>
+            <h2 id="waitTime">NUM</h2>
+            <button id="getInLine" onClick={onEnterLine}>Enter Line</button>
+        </div>
+    )
 }
 
 export default Home;

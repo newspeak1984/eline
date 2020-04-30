@@ -43,7 +43,70 @@ app.use(session({
   }));
 
 //Storage for queues
-let stores =  []; 
+let stores =  [
+    {
+        "name": "Costco, Mississauga",
+        "storeId": "5ea79bd6eddde8c4fc095b77",
+        "queue": new CircularBuffer(300)
+    },
+    {
+        "name": "Costco, Markham",
+        "storeId": "5ea751cc1f058dbb81573344",
+        "queue": new CircularBuffer(300)
+    }    
+]; 
+
+//Functions for data storage
+function addNewStore(storeName, storeId){
+    let newStore = {
+        "name": storeName,
+        "storeId": storeId,
+        "queue": new CircularBuffer(300)
+    }
+    stores.push(newStore);
+}
+
+function getStoreLineSize(storeId){
+    for(i=0; i<stores.length; i++){
+        if(stores[i].storeId == storeId){
+            return stores[i].queue.size();
+        }
+    }
+}
+
+function addUserToLine(userId, storeId){
+    stores.map((store) => {
+        if(store.storeId == storeId){
+            store.queue.enq(userId);
+            // check to see if its at max cap
+        }
+    })
+}
+
+function indexofUser(userId, storeId){
+    for(i=0; i<stores.length; i++){
+        if(stores[i].storeId == storeId){
+            for(j=0; j<stores[i].queue.size(); j++){
+                if(stores[i].queue.get(j) == userId){
+                    return stores[i].queue.size()-i;
+                }
+            }
+        }
+    }
+}
+
+function getNext(storeId){
+    for(i=0; i<stores.length; i++){
+        if(stores[i].storeId == storeId){
+            try{
+                return stores[i].queue.deq(); 
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+    }
+}
 
 //Routers
 const homeRouter = require('./routes/home');
@@ -62,6 +125,8 @@ var server = app.listen(port, () =>{
     console.log(`Server is running on port: ${port}`);
 });
 
+
+
 //Setup Websockets
 const io = socket(server);
 io.on('connection', (socket) =>{
@@ -70,11 +135,14 @@ io.on('connection', (socket) =>{
     socket.on('enter', (data) => {
         //user presses button to get inline
         //make changes to add to circular buffer with data (should contain userID)
+        //emit line size at time of entry to specific user so
+        console.log("enter: " + data);
     });
 
     socket.on('getNext', (data) => {
         //admin presses get next button
-        io.sockets.emit('getNext', newData /*return whos next inline and store id*/);
+        console.log("getNext: " + data);
+        io.sockets.emit('getNext', "NEW_DATA" /*return whos next inline and store id*/);
         //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
     })
 });

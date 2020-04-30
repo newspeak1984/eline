@@ -1,26 +1,28 @@
-import React from "react";
-import socket from "../App";
+import React, { useState, useEffect } from "react";
+import { socket } from "../App";
 
-class Admin extends React.Component{
-    constructor(){
-        super();
-    }
+function Admin() {
+    const [nextCustomer, setNextCustomer] = useState("");
 
-    onGetNext = () =>{
+    useEffect(() => {
+        socket.on("getNext", (customer) => {
+            setNextCustomer(customer);
+        });
+    })
+
+    const onGetNext = () =>{
         console.log('get next person');
-        //hit endpoint here to retrieve next customer
+        socket.emit('getNext', "CUSTOMER");
+        // TODO: send customer and store
     }
 
-    render(){
-        return(
-            <div>
-                <h1>Admin Page</h1>
-                <h2 id="nextPerson">next</h2>
-                <button onClick={this.onGetNext}>Get Next Person</button>
-            </div>
-            
-        )
-    }
+    return(
+        <div>
+            <h1>Admin Page</h1>
+            <h2 id="nextPerson">next</h2>
+            <button onClick={onGetNext}>Get Next Person</button>
+        </div>
+    )   
 }
 
 export default Admin;
