@@ -2,6 +2,7 @@ import React from "react";
 import axios from 'axios';
 import socket from "../App";
 
+
 class Home extends React.Component{
     constructor(props){
         super(props);
@@ -18,6 +19,7 @@ class Home extends React.Component{
 
     onEnterLine = () =>{
         console.log('enter line');
+        
         //hit endpoint here to enter line
     }
 
@@ -26,7 +28,7 @@ class Home extends React.Component{
             <div>
                 <h1>Welcome to eline!</h1>
                 <h2 id="waitTime">NUM</h2>
-                <button onClick={this.onEnterLine}>Enter Line</button>
+                <button id="getInLine" onClick={this.onEnterLine}>Enter Line</button>
             </div>
         )
     }

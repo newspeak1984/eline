@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const socket = require('socket.io');
+var CircularBuffer = require("circular-buffer");
 
 require('dotenv').config(); 
 
@@ -41,6 +42,10 @@ app.use(session({
     }
   }));
 
+//Storage for queues
+let stores =  []; 
+
+//Routers
 const homeRouter = require('./routes/home');
 const loginRouter = require('./routes/login');
 const createAccountRouter = require('./routes/createAccount');
