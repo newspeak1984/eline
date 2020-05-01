@@ -1,34 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
-class Login extends React.Component{
-    constructor(props){
-        super(props);
+function Login() {
 
-        this.state = {
-            loginEmail: '',
-            loginPassword: '',
-            successfulLogin: false
-        }
-    }
-    onChangeLoginEmail = (e) => {
-        this.setState({
-            loginEmail: e.target.value
-        });
+    const[loginEmail, setLoginEmail] = useState('');
+    const[loginPassword, setLoginPassword] = useState('');
+    const[successfulLogin, setSuccessfulLogin] = useState(false);
+
+    const onChangeLoginEmail = (e) => {
+        setLoginEmail(e.target.value);
     }
 
-    onChangeLoginPassword = (e) => {
-        this.setState({
-            loginPassword: e.target.value
-        });
+    const onChangeLoginPassword = (e) => {
+        setLoginPassword(e.target.value);
     }
 
-    onSubmit = (e) => {
+    const onSubmit = (e) => {
         e.preventDefault();
 
         const credentials = {
-            loginEmail: this.state.loginEmail,
-            loginPassword: this.state.loginPassword,
+            loginEmail: loginEmail,
+            loginPassword: loginPassword,
         }
 
         axios.defaults.withCredentials = true;
@@ -36,52 +28,43 @@ class Login extends React.Component{
         axios.post('http://localhost:5000/login/', credentials)
         .then(res => {
             console.log(res);
-            this.setState({
-                successfulLogin: true
-            })
+            setSuccessfulLogin(true);
             window.location = '/home/'
         }).catch(e => {
             console.log(e);
         });
 
-        this.setState({
-            loginEmail: '',
-            loginPassword: ''
-        })
-
+        setLoginEmail('');
+        setLoginPassword('');
     }
 
-    render(){
-        return(
-            <div>
-                <h3>Login</h3>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Email: </label>
-                        <input type="email"
-                            required
-                            className="form-control"
-                            value={this.state.loginEmail}
-                            onChange={this.onChangeLoginEmail}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password: </label>
-                        <input type="password"
-                            id="password"
-                            required
-                            className="form-control"
-                            value={this.state.loginPassword}
-                            onChange={this.onChangeLoginPassword}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
-                    </div>
-                </form>
-            </div>
-        )
-    }
+    return(
+        <div>
+            <h3>Login</h3>
+            <form onSubmit={onSubmit}>
+                <div className="form-group">
+                    <label>Email: </label>
+                    <input type="email"
+                        required
+                        className="form-control"
+                        onChange={onChangeLoginEmail}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Password: </label>
+                    <input type="password"
+                        id="password"
+                        required
+                        className="form-control"
+                        onChange={onChangeLoginPassword}
+                    />
+                </div>
+                <div className="form-group">
+                    <input type="submit" value="Login" className="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    )
 }
 
 export default Login;
