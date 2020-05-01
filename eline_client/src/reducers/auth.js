@@ -28,12 +28,14 @@ export default (state = {
         case VERIFY_REQUEST:
             return{
                 ...state,
-                isVerifying: true            
+                isVerifying: true     
             };
         case VERIFY_SUCCESS:
             return{
                 ...state,
                 isVerifying: false,
+                isAuthenticated: true,
+                user: action.user,
                 verifyError: false
             };
         case VERIFY_FAILURE:

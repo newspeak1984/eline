@@ -25,9 +25,10 @@ const requestVerify = () => {
     };
 };
 
-const receiveVerify = () => {
+const receiveVerify = (user) => {
     return {
-        type: VERIFY_SUCCESS
+        type: VERIFY_SUCCESS,
+        user
     };
 };
 
@@ -51,7 +52,7 @@ export const verifyAuth = () => dispatch => {
     axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
     .then(res => {
         console.log(res);
-        dispatch(receiveVerify());
+        dispatch(receiveVerify(res.data));
     }).catch(e => {
         console.log(e);
         dispatch(receiveVerifyFailure());

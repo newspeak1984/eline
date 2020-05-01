@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-class Base extends React.Component{
-    constructor(){
-        super();
+function Base() {
+
+    const onClickNewAccount = () =>{
+        window.location = '/createAccount/'
     }
-    render(){
-        return(
-            <h1>Base Page</h1>
-        )
+
+    const onClickLogin = () =>{
+        window.location = '/login/'
     }
+
+    return(
+        <div>
+            <h1>Welcome to eline!</h1>
+            <button onClick={onClickNewAccount}>Create New Account</button>
+            <br></br>
+            <button onClick={onClickLogin}>Login</button>
+        </div>            
+    )
 }
 
 export default Base;

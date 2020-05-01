@@ -1,37 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import axios from 'axios';
-import { connect } from "react-redux";
+import { connect, useDispatch, useStore } from "react-redux";
 import { loginUser } from "../actions";
 
-class Login extends React.Component{
-    constructor(props){
-        super(props);
+function Login() {
+    const dispatch = useDispatch();
+    const store = useStore();
 
-        this.state = {
-            loginEmail: '',
-            loginPassword: '',
-            successfulLogin: false
-        }
-    }
-    onChangeLoginEmail = (e) => {
-        this.setState({
-            loginEmail: e.target.value
-        });
+    const[loginEmail, setLoginEmail] = useState('');
+    const[loginPassword, setLoginPassword] = useState('');
+    const[successfulLogin, setSuccessfulLogin] = useState(false);
+
+    const onChangeLoginEmail = (e) => {
+        setLoginEmail(e.target.value);
     }
 
-    onChangeLoginPassword = (e) => {
-        this.setState({
-            loginPassword: e.target.value
-        });
+    const onChangeLoginPassword = (e) => {
+        setLoginPassword(e.target.value);
     }
 
-    onSubmit = (e) => {
-        const { dispatch } = this.props;
+    const onSubmit = (e) => {
         e.preventDefault();
 
         const credentials = {
-            loginEmail: this.state.loginEmail,
-            loginPassword: this.state.loginPassword,
+            loginEmail: loginEmail,
+            loginPassword: loginPassword,
         }
 
         axios.defaults.withCredentials = true;
@@ -39,54 +33,42 @@ class Login extends React.Component{
         axios.post('http://localhost:5000/login/', credentials)
         .then(res => {
             console.log(res);
+            setSuccessfulLogin(true);
             dispatch(loginUser(res.data));
-            this.setState({
-                successfulLogin: true
-            })
 
-            window.location = '/home/'
+            
         }).catch(e => {
             console.log(e);
         });
-
-        this.setState({
-            loginEmail: '',
-            loginPassword: ''
-        })
-
     }
 
-    render(){
-        return(
-            <div>
-                <h3>Login</h3>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Email: </label>
-                        <input type="email"
-                            required
-                            className="form-control"
-                            value={this.state.loginEmail}
-                            onChange={this.onChangeLoginEmail}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password: </label>
-                        <input type="password"
-                            id="password"
-                            required
-                            className="form-control"
-                            value={this.state.loginPassword}
-                            onChange={this.onChangeLoginPassword}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
-                    </div>
-                </form>
-            </div>
-        )
-    }
+    return(
+        <div>
+            <h3>Login</h3>
+            <form onSubmit={onSubmit}>
+                <div className="form-group">
+                    <label>Email: </label>
+                    <input type="email"
+                        required
+                        className="form-control"
+                        onChange={onChangeLoginEmail}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Password: </label>
+                    <input type="password"
+                        id="password"
+                        required
+                        className="form-control"
+                        onChange={onChangeLoginPassword}
+                    />
+                </div>
+                <div className="form-group">
+                    <input type="submit" value="Login" className="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    )
 }
 
 function mapStateToProps(state) {
