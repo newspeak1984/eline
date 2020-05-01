@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
-import { connect, useDispatch, useStore } from "react-redux";
+import { connect, useDispatch, useStore, useSelector, shallowEqual } from "react-redux";
 import { loginUser } from "../actions";
 
-function Login() {
+export default function Login() {
     const dispatch = useDispatch();
-    const store = useStore();
+    
+    const { user, isAuthenticated } = useSelector(state => ({
+        user: state.auth.user,
+        isAuthenticated: state.auth.isAuthenticated
+    }), shallowEqual)
 
     const[loginEmail, setLoginEmail] = useState('');
     const[loginPassword, setLoginPassword] = useState('');
@@ -35,8 +39,7 @@ function Login() {
             console.log(res);
             setSuccessfulLogin(true);
             dispatch(loginUser(res.data));
-
-            
+            window.location = '/home';
         }).catch(e => {
             console.log(e);
         });
@@ -70,11 +73,3 @@ function Login() {
         </div>
     )
 }
-
-function mapStateToProps(state) {
-    return {
-        user: state.auth.user
-    };
-}
-
-export default (connect(mapStateToProps)(Login));

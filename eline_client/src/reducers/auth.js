@@ -42,6 +42,7 @@ export default (state = {
             return{
                 ...state,
                 isVerifying: false,
+                isAuthenticated: false, 
                 verifyError: true
             }
         default:

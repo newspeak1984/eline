@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
 import { socket } from "../App";
-import { getFromQueue } from "../actions";
+import { verifyAuth, getFromQueue } from "../actions";
 
-function Admin() {
+export default function Admin() {
     const dispatch = useDispatch();
+
+    const { enteredLine } = useSelector(state => ({
+        enteredLine: state.queue_admin.enteredLine
+        // TODO check for admin login
+    }), shallowEqual)
 
     const [nextCustomer, setNextCustomer] = useState("");
 
@@ -12,7 +17,8 @@ function Admin() {
         socket.on("getNext", (customer) => {
             setNextCustomer(customer);
         });
-    })
+
+    }, [nextCustomer])
 
     const onGetNext = () =>{
         console.log('get next person');
@@ -29,11 +35,3 @@ function Admin() {
         </div>
     )   
 }
-
-function mapStateToProps(state) {
-    return {
-        isAuthenticated: state.auth.isAuthenticated
-    };
-}
-
-export default (connect(mapStateToProps)(Admin));
