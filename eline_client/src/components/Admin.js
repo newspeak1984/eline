@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { socket } from "../App";
 
 function Admin() {
@@ -8,6 +9,13 @@ function Admin() {
         socket.on("getNext", (customer) => {
             setNextCustomer(customer);
         });
+
+        axios.get('http://localhost:5000/admin/verifySession', { withCredentials: true })
+            .then(res => {
+                console.log(res);
+            }).catch(e => {
+                console.log(e);
+            });
     })
 
     const onGetNext = () =>{
