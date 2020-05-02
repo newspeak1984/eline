@@ -3,18 +3,17 @@ const bcrypt = require('bcryptjs');
 
 const Schema = mongoose.Schema;
 
-const customerSchema = new Schema({
+const adminSchema = new Schema({
   email: { type: String, unique: true, required: true, trim: true, dropDups: true },
-  username: { type: String, required: true, trim: true },
   password: { type: String, required: true},
-  phone: { type: String, unique: true,required: true, dropDups: true },
+  storeId: { type: String, required: true, trim: true },
 }, {
   timestamps: true,
 });
 
 //authenticate login input against database
-customerSchema.statics.authenticate = function (email, password, callback) {
-  Customer.findOne({ email: email })
+adminSchema.statics.authenticate = function (email, password, callback) {
+  Admin.findOne({ email: email })
     .exec(function (err, user) {
       if (err) {
         return callback(err)
@@ -33,6 +32,6 @@ customerSchema.statics.authenticate = function (email, password, callback) {
     });
 }
 
-const Customer = mongoose.model('Customer', customerSchema);
+const Admin = mongoose.model('Admin', adminSchema);
 
-module.exports = Customer;
+module.exports = Admin;

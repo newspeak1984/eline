@@ -8,7 +8,6 @@ router.route('/').post((req, res) => {
   const username = req.body.username;
   const prePassword = req.body.password;
   const phone = req.body.phone;
-  const currentStore = req.body.currentStore;
 
   //hashing password before saving to database
   bcrypt.hash(prePassword, 10, (err, password) => {
@@ -16,7 +15,7 @@ router.route('/').post((req, res) => {
       console.log(err);
     }
     else {
-      const newCustomer = new Customer({ email, username, password, phone, currentStore });
+      const newCustomer = new Customer({ email, username, password, phone });
       newCustomer.save()
         .then(() => res.json(`${username} added!`))
         .catch(err => res.status(400).json('Error: ' + err));
