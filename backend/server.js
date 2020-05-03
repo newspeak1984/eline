@@ -74,20 +74,20 @@ function getStoreLineSize(storeId){
     }
 }
 
-function addUserToLine(userId, storeId){
+function addUserToLine(customerId, storeId){
     stores.map((store) => {
         if(store.storeId == storeId){
-            store.queue.enq(userId);
+            store.queue.enq(customerId);
             // check to see if its at max cap
         }
     })
 }
 
-function indexofUser(userId, storeId){
+function getIndexofUser(customerId, storeId){
     for(i=0; i<stores.length; i++){
         if(stores[i].storeId == storeId){
             for(j=0; j<stores[i].queue.size(); j++){
-                if(stores[i].queue.get(j) == userId){
+                if(stores[i].queue.get(j) == customerId){
                     return stores[i].queue.size()-i;
                 }
             }
@@ -134,15 +134,28 @@ io.on('connection', (socket) =>{
 
     socket.on('enter', (data) => {
         //user presses button to get inline
-        //make changes to add to circular buffer with data (should contain userID)
+        //make changes to add to circular buffer with data (should contain customerId)
         //emit line size at time of entry to specific user so
-        console.log("enter: " + data);
+        console.log("enter: " + JSON.stringify(data));
+        // FIXME: event received twice??? first with store and customer, then right after with just store????
+        addUserToLine(data.customerId, data.storeId);
+        index = getIndexofUser(data.customerId, data.storeId)
+        customer = (data.customerId) ? data.customerId : customer
+        io.sockets.emit('initialPosition', {
+            index: index,
+            customerId: data.customerId
+        });
     });
 
     socket.on('getNext', (data) => {
         //admin presses get next button
-        console.log("getNext: " + data);
-        io.sockets.emit('getNext', "NEW_DATA" /*return whos next inline and store id*/);
+        // data is the storeId
+        console.log("getNext", data);
+        nextCustomer = {
+            customerId: getNext(data),
+            storeId: data
+        }
+        io.sockets.emit('getNext', nextCustomer);
         //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
     })
 });

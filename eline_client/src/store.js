@@ -1,8 +1,16 @@
 import { applyMiddleware, createStore, compose } from "redux";
+import { persistStore, persistReducer } from 'redux-persist'
 import thunkMiddleware from "redux-thunk";
-
+import storage from 'redux-persist/lib/storage'
 import { verifyAuth } from "./actions";
 import rootReducer from './reducers';
+
+const persistConfig = {
+    key: 'root',
+    storage
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 const logger = store => next => action => {
     console.log('dispatching', action)
@@ -13,12 +21,18 @@ const logger = store => next => action => {
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export default function configureStore(persistedState) {
-    const store = createStore(
-        rootReducer,
-        persistedState,
-        composeEnhancers(applyMiddleware(thunkMiddleware, logger))
-    );
-    // store.dispatch(verifyAuth());
-    return store;
-};
+// export default function configureStore() {
+//     return store = createStore(
+//         persistedReducer,
+//         composeEnhancers(applyMiddleware(thunkMiddleware, logger))
+//     );
+//     // store.dispatch(verifyAuth());
+//     // return store;
+// };
+
+export const store = createStore(
+    persistedReducer,
+    composeEnhancers(applyMiddleware(thunkMiddleware, logger))
+);
+export const persistor = persistStore(store);
+

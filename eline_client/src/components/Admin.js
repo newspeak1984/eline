@@ -14,17 +14,24 @@ export default function Admin() {
     const [nextCustomer, setNextCustomer] = useState("");
 
     useEffect(() => {
-        socket.on("getNext", (customer) => {
-            setNextCustomer(customer);
+        let mounted = true;
+
+        socket.on("getNext", (data) => {
+            if (mounted) {
+                console.log('next: ', data.customerId)
+                setNextCustomer(data.customerId);
+            }
         });
 
+        return () => mounted = false;
     }, [nextCustomer])
 
-    const onGetNext = () =>{
+    const onGetNext = (e) =>{
+        e.preventDefault();
         console.log('get next person');
-        socket.emit('getNext', "CUSTOMER");
-        dispatch(getFromQueue("Costco, Markham", "5ea73939eb0c882ba06bdad5"))
-        // TODO: send customer and store
+        socket.emit('getNext', "5ea751cc1f058dbb81573344");
+        dispatch(getFromQueue("Costco, Markham", "5ea751cc1f058dbb81573344"))
+        // TODO: use state
     }
 
     return(

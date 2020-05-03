@@ -1,10 +1,11 @@
 import {
     ADD_TO_QUEUE,
-    REMOVE_FROM_QUEUE
+    REMOVE_FROM_QUEUE,
+    MOVE_UP_IN_QUEUE,
+    SET_INITIAL_POSITION
 } from "../actions";
 
 export default (state = {
-    // is inQueue needed when we track current store?
     inQueue: false,
     currentStore: null
 }, action) => {
@@ -21,6 +22,16 @@ export default (state = {
                 inQueue: false,
                 currentStore: null
             };
+        case MOVE_UP_IN_QUEUE:
+            return {
+                ...state,
+                placement: state.placement - 0.5
+            }
+        case SET_INITIAL_POSITION:
+            return {
+                ...state,
+                placement: action.pos
+            }
         default:
             return state;
     }

@@ -45,7 +45,8 @@ export default function Login() {
         });
     }
 
-    return(
+    return isAuthenticated ? <div><h2>You are already logged in</h2></div>
+    : (
         <div>
             <h3>Login</h3>
             <form onSubmit={onSubmit}>

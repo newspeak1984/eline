@@ -23,10 +23,6 @@ const retrieveFromQueueFailure = () =>  {
 
 
 export const getFromQueue = (store, customer) => dispatch => {
-    socket.emit('getNext', {
-        storeId: store,
-        customerId: customer
-    });
     dispatch(retrieveFromQueueSuccess(store, customer));
 }
 
