@@ -8,8 +8,8 @@ export default function Login() {
     const dispatch = useDispatch();
     
     const { user, isAuthenticated } = useSelector(state => ({
-        user: state.auth.user,
-        isAuthenticated: state.auth.isAuthenticated
+        user: state.auth_customer.user,
+        isAuthenticated: state.auth_customer.isAuthenticated
     }), shallowEqual)
 
     const[loginEmail, setLoginEmail] = useState('');
