@@ -4,13 +4,13 @@ import {
     VERIFY_REQUEST,
     VERIFY_SUCCESS,
     VERIFY_FAILURE
-} from "../actions/";
+} from "../actions";
 
 export default (state = {
     isVerifying: false,
     verifyError: false,
     isAuthenticated: false,
-    user: {} // store email and sessionID?
+    user: ''
 }, action) => {
     switch (action.type) {
         case LOGIN_SUCCESS:

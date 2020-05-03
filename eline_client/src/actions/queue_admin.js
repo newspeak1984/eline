@@ -1,15 +1,11 @@
-import axios from 'axios';
-import { socket } from "../App";
-
 export const GET_FROM_QUEUE_SUCCESS = "GET_FROM_QUEUE_SUCCESS";
 export const GET_FROM_QUEUE_FAILURE = "GET_FROM_QUEUE_FAILURE";
 export const PURGE_ENTERED_LIST = "PURGE_ENTERED_LIST";
 
-const retrieveFromQueueSuccess = (storeId, customerId) =>  {
+const retrieveFromQueueSuccess = (customerId) =>  {
     // TODO: take storeId then ping mongo for the queue url?
     return {
         type: GET_FROM_QUEUE_SUCCESS,
-        storeId, 
         customerId
     };
 };
@@ -22,8 +18,8 @@ const retrieveFromQueueFailure = () =>  {
 };
 
 
-export const getFromQueue = (store, customer) => dispatch => {
-    dispatch(retrieveFromQueueSuccess(store, customer));
+export const getFromQueue = (customer) => dispatch => {
+    dispatch(retrieveFromQueueSuccess(customer));
 }
 
 export const purgeEnteredList = () => dispatch => {

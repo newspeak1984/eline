@@ -53,15 +53,17 @@ router.route('/login').post((req, res, next) => {
       err.status = 401;
       return next(err);
     } else {
-      res.redirect('/admin/setSession?id=' + user._id);      
+      res.redirect('/admin/setSession?id=' + user._id + '&store=' + user.storeId);      
     }
   });
 });
 
 router.route('/setSession').get((req, res, next) => {  
   let sessionId = req.query.id;
+  let storeId = req.query.store;
   console.log('SESSION ID: ', sessionId);
   req.session.userId = sessionId;
+  req.session.storeId = storeId;
   res.send(req.session.userId);
 });
 
@@ -77,7 +79,7 @@ router.route('/verifySession').get((req, res, next) => {
           err.status = 400;
           return next(err);
         } else {
-          return res.send('Session is active')
+          return res.send({adminId: req.session.sessionId, storeId: req.session.storeId})
         }
       }
     });

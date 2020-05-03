@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
-import axios from 'axios';
 import { socket } from "../App";
-import { verifyAuth, getFromQueue } from "../actions";
+import { verifyAdminAuth, getFromQueue } from "../actions";
 
 export default function Admin() {
     const dispatch = useDispatch();
 
-    const { enteredLine } = useSelector(state => ({
-        enteredLine: state.queue_admin.enteredLine
-        // TODO check for admin login
+    const { enteredCustomer, isAdminAuthenticated, isVerifying, adminId, storeId } = useSelector(state => ({
+        enteredCustomer: state.queue_admin.enteredCustomer,
+        isVerifying: state.auth_admin.isVerifying,
+        isAdminAuthenticated: state.auth_admin.isAdminAuthenticated,
+        adminId: state.auth_admin.adminId,
+        storeId: state.auth_admin.storeId,
     }), shallowEqual)
-
-    const [nextCustomer, setNextCustomer] = useState("");
 
     useEffect(() => {
         let mounted = true;
@@ -20,34 +20,37 @@ export default function Admin() {
         socket.on("getNext", (data) => {
             if (mounted) {
                 console.log('next: ', data.customerId)
-                setNextCustomer(data.customerId);
-                dispatch(getFromQueue("5eac76442a7020291c92e62f", data.customerId))
+                dispatch(getFromQueue(data.customerId))
             }
         });
 
-        //TODO: dispatch this
-        axios.get('http://localhost:5000/admin/verifySession', { withCredentials: true })
-            .then(res => {
-                console.log(res);
-            }).catch(e => {
-                console.log(e);
-            });
+        dispatch(verifyAdminAuth());
 
         return () => mounted = false;
-    }, [nextCustomer])
+    }, [enteredCustomer])
 
     const onGetNext = (e) =>{
         e.preventDefault();
         console.log('get next person');
-        socket.emit('getNext', "5eac76442a7020291c92e62f");
-        // TODO
+        socket.emit('getNext', storeId);
     }
 
     return(
         <div>
             <h1>Admin Page</h1>
-            <h2 id="nextPerson">Next person: {nextCustomer}</h2>
-            <button onClick={onGetNext}>Get Next Person</button>
+            {
+                isVerifying
+                    ? <h4>Loading</h4>
+                    : ( isAdminAuthenticated 
+                        ? <div>
+                            <h1>StoreId {storeId}</h1>
+                            {/* write store name somewhere */}
+                            <h2 id="nextPerson">Next person: {enteredCustomer}</h2>
+                            <button onClick={onGetNext}>Get Next Person</button>
+                        </div>
+                        : <h2>You are not logged in as an admin</h2>
+                    )
+            }
         </div>
     )   
 }

@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
-import { verifyAuth, removeFromQueue, addToQueue, moveUpInQueue, setInitialPosition } from "../actions";
+import Button from '@material-ui/core/Button';
+import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition } from "../actions";
 import { socket } from "../App";
 
 export default function Home() {
     const dispatch = useDispatch();
 
-    const { user, isAuthenticated, currentStore, placement } = useSelector(state => ({
-        user: state.auth.user,
-        isAuthenticated: state.auth.isAuthenticated,
+    const { user, isAuthenticated, currentStore, placement, isVerifying, isAddingToQueue } = useSelector(state => ({
+        user: state.auth_customer.user,
+        isAuthenticated: state.auth_customer.isAuthenticated,
+        isVerifying: state.auth_customer.isVerifying,
         currentStore: state.queue_customer.currentStore,
         placement: state.queue_customer.placement,
-        inQueue: state.queue_customer.inQueue
+        isAddingToQueue: state.queue_customer.isAddingToQueue
     }), shallowEqual)
 
     const [stores, setStores] = useState([]);
@@ -59,20 +61,14 @@ export default function Home() {
     }, [placement])
 
     const onEnterLine = (storeId) => {
-        console.log('enter line');
-        console.log(`entering`, user)
         socket.emit('enter', {
             customerId: user,
             storeId: storeId
         });
-        dispatch(addToQueue(storeId))
-        // TODO: send customer and store info
-        // need to send dispatch?
     }
 
     const onGetNext = () => {
-        console.log('current placement', placement);
-
+        console.log('current placement', placement); 
         dispatch(moveUpInQueue())
     }
 
@@ -85,9 +81,11 @@ export default function Home() {
             navigator.geolocation.getCurrentPosition(function (position) {
                 let latitude = position.coords.latitude;
                 let longitude = position.coords.longitude;
-                console.log('User Location: ', latitude, longitude)
+
                 // let latitude = 43.846085;
                 // let longitude = -79.353386;
+
+                console.log('User Location: ', latitude, longitude)
                 let distance = getDistance(latitude, longitude, storeLat, storeLong);
                 console.log('Distance: ', distance);
                 if(distance >= 0 && distance <= 400){
@@ -118,8 +116,10 @@ export default function Home() {
         return 12742 * Math.asin(Math.sqrt(a)) * 1000; // 2 * R; R = 6371 km
       }
 
-    const onSubmit = (e) => {
-        e.preventDefault();
+    const onSubmit = () => {
+        // e.preventDefault();
+
+        dispatch(addToQueueRequest());
         
         let storeLat, storeLong, storeId;
         for(let i=0;i<stores.length;i++){
@@ -134,11 +134,12 @@ export default function Home() {
             console.log('result:' , result);
             if (result) {
                 onEnterLine(storeId);
-                // TODO: send customer and store info
+                dispatch(addToQueueSuccess(storeId))
             }
             else{
+                dispatch(addToQueueFailure());
                 console.log('NOT IN RADIUS');
-                // handle UI when not in radius
+                // TODO: handle UI when not in radius
             }
         });        
     }
@@ -148,34 +149,39 @@ export default function Home() {
     }
 
     const ref = useRef('userInput');
-    return isAuthenticated ?(
+    return (isAuthenticated) ?(
         <div>
             <h1>Welcome to eline!</h1>
             {
-                currentStore 
-                    ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                    : <form onSubmit={onSubmit}>
-                        <div className="form-group">
-                            <label>Store: </label>
-                            <select ref={ref}
-                                required
-                                className="form-control"
-                                value={selectedStore}
-                                onChange={onSelectStore}>
-                                {
-                                    stores.map(function (store) {
-                                        return <option
-                                            key={store.name}
-                                            value={store.name}>{store.name}
-                                        </option>;
-                                    })
-                                }
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <input type="submit" value="Enter Line" className="btn btn-primary" />
-                        </div>
-                    </form>
+                isAddingToQueue
+                    ? <h2>Adding you to {selectedStore}'s line</h2>
+                    : <div> {
+                        currentStore
+                            ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
+                            : <form>
+                                <div className="form-group">
+                                    <label>Store: </label>
+                                    <select ref={ref}
+                                        required
+                                        className="form-control"
+                                        value={selectedStore}
+                                        onChange={onSelectStore}>
+                                        {
+                                            stores.map(function (store) {
+                                                return <option
+                                                    key={store.name}
+                                                    value={store.name}>{store.name}
+                                                </option>;
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
+                                    <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
+                                </div>
+                            </form>
+                    } </div>
             }
         </div>
     ) : <div>

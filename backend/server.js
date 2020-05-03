@@ -5,6 +5,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const socket = require('socket.io');
 var CircularBuffer = require("circular-buffer");
+let Store = require('./models/store_model');
 
 require('dotenv').config();
 
@@ -43,18 +44,16 @@ app.use(session({
 }));
 
 //Storage for queues
-let stores = [
-    {
-        "name": "Costco, Mississauga",
-        "storeId": "5ea79bd6eddde8c4fc095b77",
-        "queue": new CircularBuffer(300)
-    },
-    {
-        "name": "Costco, Markham",
-        "storeId": "5eac76442a7020291c92e62f",
-        "queue": new CircularBuffer(300)
-    }
-];
+let stores = [];
+
+//Load stores from db into local storage
+Store.find()
+    .then((dbStores) => {
+        dbStores.map((store) => {
+            addNewStore(store.name, store._id);
+        });
+    })
+    .catch((err) => console.log(err));
 
 //Functions for data storage
 function addNewStore(storeName, storeId) {
@@ -141,11 +140,12 @@ io.on('connection', (socket) => {
         // FIXME: event received twice??? first with store and customer, then right after with just store????
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
-        // console.log(index)
+        console.log(stores);
         customer = (data.customerId) ? data.customerId : customer
         io.sockets.emit('initialPosition', {
             index: index,
-            customerId: data.customerId
+            customerId: data.customerId,
+            storeId: data.storeId
         });
     });
 

@@ -4,14 +4,13 @@ import {
 } from "../actions";
 
 export default (state = {
-    enteredList: []
+    enteredCustomer: ''
 }, action) => {
     switch (action.type) {
         case GET_FROM_QUEUE_SUCCESS:
             return {
                 ...state,
-                enteredList: [...state.enteredList, action.customerId]
-                // TODO: cap the size?
+                enteredCustomer: action.customerId
             };
         case PURGE_ENTERED_LIST:
             return {

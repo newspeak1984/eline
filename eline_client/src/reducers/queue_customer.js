@@ -1,5 +1,7 @@
 import {
-    ADD_TO_QUEUE,
+    ADD_TO_QUEUE_SUCCESS,
+    ADD_TO_QUEUE_FAILURE,
+    ADD_TO_QUEUE_REQUEST,
     REMOVE_FROM_QUEUE,
     MOVE_UP_IN_QUEUE,
     SET_INITIAL_POSITION
@@ -7,15 +9,27 @@ import {
 
 export default (state = {
     inQueue: false,
-    currentStore: null
+    currentStore: null,
+    isAddingToQueue: false
 }, action) => {
     switch (action.type) {
-        case ADD_TO_QUEUE:
+        case ADD_TO_QUEUE_REQUEST:
+            return {
+                ...state, 
+                isAddingToQueue: true
+            }
+        case ADD_TO_QUEUE_SUCCESS:
             return {
                 ...state,
                 inQueue: true,
-                currentStore: action.storeId
+                currentStore: action.storeId,
+                isAddingToQueue: false
             };
+        case ADD_TO_QUEUE_FAILURE:
+            return {
+                ...state,
+                isAddingToQueue: false
+            }
         case REMOVE_FROM_QUEUE:
             return {
                 ...state,
