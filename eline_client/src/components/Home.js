@@ -1,20 +1,48 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
+import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
+import { verifyAuth, removeFromQueue, addToQueue, moveUpInQueue, setInitialPosition } from "../actions";
 import { socket } from "../App";
 
-function Home() {
-    const [placement, setPlacement] = useState(300);
+export default function Home() {
+    const dispatch = useDispatch();
+
+    const { user, isAuthenticated, currentStore, placement } = useSelector(state => ({
+        user: state.auth.user,
+        isAuthenticated: state.auth.isAuthenticated,
+        currentStore: state.queue_customer.currentStore,
+        placement: state.queue_customer.placement,
+        inQueue: state.queue_customer.inQueue
+    }), shallowEqual)
+
     const [stores, setStores] = useState([]);
     const [selectedStore, setSelectedStore] = useState();
 
     useEffect(() => {
         let mounted = true;
 
-        socket.on("getNext", () => {
-            if (mounted) {
-                setPlacement(placement - 1);
+        socket.on('initialPosition', (data) => {
+            console.log('intial position', mounted, data);
+            if (mounted && data.customerId === user) {
+                console.log(data.index);
+                dispatch(setInitialPosition(data.index))
+            }
+        })
+
+        socket.on('getNext', (data) => {
+            // data is {customerId, storeId}
+            if (mounted && placement > 0) {
+                // TODO: check that customer is matching here
+                console.log('get next', data, placement);
+                // FIXME: maybe try preventing the two requests
+                onGetNext();    
+            } else if (mounted && data.customerId === user && data.storeId === currentStore) {
+                console.log(`REMOVING ${user} from ${data.storeId}`);
+                onRemoveFromQueue();
             }
         });
+ 
+        dispatch(verifyAuth());
 
         axios.get('http://localhost:5000/store/')
             .then(response => {
@@ -27,24 +55,39 @@ function Home() {
                 console.log(error);
             })
 
-        axios.get('http://localhost:5000/login/verifySession', { withCredentials: true })
-            .then(res => {
-                console.log(res);
-            }).catch(e => {
-                console.log(e);
-            });
-
         return () => mounted = false;
     }, [placement])
+
+    const onEnterLine = (storeId) => {
+        console.log('enter line');
+        console.log(`entering`, user)
+        socket.emit('enter', {
+            customerId: user,
+            storeId: storeId
+        });
+        dispatch(addToQueue(storeId))
+        // TODO: send customer and store info
+        // need to send dispatch?
+    }
+
+    const onGetNext = () => {
+        console.log('current placement', placement);
+
+        dispatch(moveUpInQueue())
+    }
+
+    const onRemoveFromQueue = () => {
+        dispatch(removeFromQueue())
+    }
 
     function verifyLocation(storeLat, storeLong, fn){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
                 console.log('User Location: ', latitude, longitude)
-                //var latitude = 43.611886;
-                //var longitude = -79.692436;
+                // let latitude = 43.846085;
+                // let longitude = -79.353386;
                 let distance = getDistance(latitude, longitude, storeLat, storeLong);
                 console.log('Distance: ', distance);
                 if(distance >= 0 && distance <= 400){
@@ -78,18 +121,19 @@ function Home() {
     const onSubmit = (e) => {
         e.preventDefault();
         
-        let storeLat, storeLong;
+        let storeLat, storeLong, storeId;
         for(let i=0;i<stores.length;i++){
             if(stores[i].name === selectedStore){
                 storeLat = parseFloat(stores[i].latitude.$numberDecimal);
                 storeLong = parseFloat(stores[i].longitude.$numberDecimal);
+                storeId = stores[i]._id;
             }
         }
         console.log('Store Location: ', storeLat, storeLong)
         verifyLocation(storeLat, storeLong, (result) => {
             console.log('result:' , result);
             if (result) {
-                socket.emit('enter', "DATA");
+                onEnterLine(storeId);
                 // TODO: send customer and store info
             }
             else{
@@ -104,34 +148,37 @@ function Home() {
     }
 
     const ref = useRef('userInput');
-    return (
+    return isAuthenticated ?(
         <div>
             <h1>Welcome to eline!</h1>
-            <h2 id="waitTime">{placement}</h2>
-            <form onSubmit={onSubmit}>
-                <div className="form-group">
-                    <label>Store: </label>
-                    <select ref={ref}
-                        required
-                        className="form-control"
-                        value={selectedStore}
-                        onChange={onSelectStore}>
-                        {
-                            stores.map(function (store) {
-                                return <option
-                                    key={store.name}
-                                    value={store.name}>{store.name}
-                                </option>;
-                            })
-                        }
-                    </select>
-                </div>
-                <div className="form-group">
-                    <input type="submit" value="Enter Line" className="btn btn-primary" />
-                </div>
-            </form>
+            {
+                currentStore 
+                    ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
+                    : <form onSubmit={onSubmit}>
+                        <div className="form-group">
+                            <label>Store: </label>
+                            <select ref={ref}
+                                required
+                                className="form-control"
+                                value={selectedStore}
+                                onChange={onSelectStore}>
+                                {
+                                    stores.map(function (store) {
+                                        return <option
+                                            key={store.name}
+                                            value={store.name}>{store.name}
+                                        </option>;
+                                    })
+                                }
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <input type="submit" value="Enter Line" className="btn btn-primary" />
+                        </div>
+                    </form>
+            }
         </div>
-    )
+    ) : <div>
+        <h4>You are not logged in yet</h4>
+    </div>
 }
-
-export default Home;

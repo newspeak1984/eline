@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
-function CreateAccount() {
+export default function CreateAccount() {
     
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -131,5 +131,3 @@ function CreateAccount() {
     )
 
 }
-
-export default CreateAccount;

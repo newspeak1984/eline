@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Base() {
+export default function Base() {
 
     const onClickNewAccount = () =>{
         window.location = '/createAccount/'
@@ -19,5 +19,3 @@ function Base() {
         </div>            
     )
 }
-
-export default Base;

@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import axios from 'axios';
+import { connect, useDispatch, useStore, useSelector, shallowEqual } from "react-redux";
+import { loginUser } from "../actions";
 
-function Login() {
+export default function Login() {
+    const dispatch = useDispatch();
+    
+    const { user, isAuthenticated } = useSelector(state => ({
+        user: state.auth.user,
+        isAuthenticated: state.auth.isAuthenticated
+    }), shallowEqual)
 
     const[loginEmail, setLoginEmail] = useState('');
     const[loginPassword, setLoginPassword] = useState('');
@@ -29,16 +38,15 @@ function Login() {
         .then(res => {
             console.log(res);
             setSuccessfulLogin(true);
-            window.location = '/home/'
+            dispatch(loginUser(res.data));
+            window.location = '/home';
         }).catch(e => {
             console.log(e);
         });
-
-        setLoginEmail('');
-        setLoginPassword('');
     }
 
-    return(
+    return isAuthenticated ? <div><h2>You are already logged in</h2></div>
+    : (
         <div>
             <h3>Login</h3>
             <form onSubmit={onSubmit}>
@@ -66,5 +74,3 @@ function Login() {
         </div>
     )
 }
-
-export default Login;

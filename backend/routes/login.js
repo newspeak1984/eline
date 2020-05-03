@@ -35,7 +35,7 @@ router.route('/verifySession').get((req, res, next) => {
           err.status = 400;
           return next(err);
         } else {
-          return res.send('Session is active')
+          return res.send(req.session.userId)
         }
       }
     });
