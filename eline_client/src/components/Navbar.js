@@ -19,6 +19,12 @@ export default function Navbar() {
         <li className="navbar-item">
         <Link to="/admin" className="nav-link">Admin</Link>
         </li>
+        <li className="navbar-item">
+        <Link to="/admin/createAccount" className="nav-link">Create Admin</Link>
+        </li>
+        <li className="navbar-item">
+        <Link to="/admin/login" className="nav-link">Admin Login</Link>
+        </li>        
       </ul>
       </div>
     </nav>

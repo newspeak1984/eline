@@ -7,8 +7,7 @@ const storeSchema = new Schema({
   longitude: { type: Schema.Types.Decimal128, required: true },
   latitude: { type: Schema.Types.Decimal128, required: true },
   open: { type: Number, required: true },
-  close: { type: Number, required: true},
-  queueUrl: { type: String, required: true }
+  close: { type: Number, required: true}
 }, {
   timestamps: true,
 });

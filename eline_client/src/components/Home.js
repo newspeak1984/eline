@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import { verifyAuth, removeFromQueue, addToQueue, moveUpInQueue, setInitialPosition } from "../actions";
@@ -15,7 +15,8 @@ export default function Home() {
         inQueue: state.queue_customer.inQueue
     }), shallowEqual)
 
-    // const place = placement.toFix(1);
+    const [stores, setStores] = useState([]);
+    const [selectedStore, setSelectedStore] = useState();
 
     useEffect(() => {
         let mounted = true;
@@ -43,28 +44,31 @@ export default function Home() {
  
         dispatch(verifyAuth());
 
+        axios.get('http://localhost:5000/store/')
+            .then(response => {
+                if (response.data.length > 0) {
+                    setStores(response.data.map(store => store))
+                    setSelectedStore(response.data[0].name)
+                }                
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+
         return () => mounted = false;
     }, [placement])
 
-    const onEnterLine = () => {
+    const onEnterLine = (storeId) => {
         console.log('enter line');
         console.log(`entering`, user)
         socket.emit('enter', {
             customerId: user,
-            storeId: "5ea751cc1f058dbb81573344"
+            storeId: storeId
         });
-        dispatch(addToQueue("5ea751cc1f058dbb81573344"))
+        dispatch(addToQueue(storeId))
         // TODO: send customer and store info
         // need to send dispatch?
     }
-
-    // FIXME: this is read like 4 times
-    // socket.on('initialPosition', (data) => {
-    //     console.log('intial position', data);
-    //     if (data.customerId === user) {
-    //         dispatch(setInitialPosition(data.index))
-    //     }
-    // })
 
     const onGetNext = () => {
         console.log('current placement', placement);
@@ -76,13 +80,112 @@ export default function Home() {
         dispatch(removeFromQueue())
     }
 
-    return isAuthenticated ? (
+    // return isAuthenticated ? (
+    //     <div>
+    //         <h1>Welcome to eline!</h1>
+    //         {
+    //             currentStore 
+    //                 ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
+    //                 : <button id="getInLine" onClick={onEnterLine}>Enter Line</button>
+    //         }
+
+
+    function verifyLocation(storeLat, storeLong, fn){
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                //var latitude = position.coords.latitude;
+                //var longitude = position.coords.longitude;
+                console.log('User Location: ', latitude, longitude)
+                var latitude = 43.846085;
+                var longitude = -79.353386;
+                let distance = getDistance(latitude, longitude, storeLat, storeLong);
+                console.log('Distance: ', distance);
+                if(distance >= 0 && distance <= 400){
+                    fn(true);
+                }else {
+                    fn(false);
+                }          
+
+            },
+                function error(msg) {
+                    alert('Please enable your GPS position feature.');
+                    fn(false);
+                },
+                { maximumAge: 10000, timeout: 5000, enableHighAccuracy: true });
+        } else {
+            alert("Geolocation API is not supported in your browser.");
+            fn(false);
+        }
+    }
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+        var p = 0.017453292519943295;    // Math.PI / 180
+        var c = Math.cos;
+        var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+                c(lat1 * p) * c(lat2 * p) * 
+                (1 - c((lon2 - lon1) * p))/2;
+      
+        return 12742 * Math.asin(Math.sqrt(a)) * 1000; // 2 * R; R = 6371 km
+      }
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        
+        let storeLat, storeLong, storeId;
+        for(let i=0;i<stores.length;i++){
+            if(stores[i].name === selectedStore){
+                storeLat = parseFloat(stores[i].latitude.$numberDecimal);
+                storeLong = parseFloat(stores[i].longitude.$numberDecimal);
+                storeId = stores[i]._id;
+            }
+        }
+        console.log('Store Location: ', storeLat, storeLong)
+        verifyLocation(storeLat, storeLong, (result) => {
+            console.log('result:' , result);
+            if (result) {
+                onEnterLine(storeId);
+                // TODO: send customer and store info
+            }
+            else{
+                console.log('NOT IN RADIUS');
+                // handle UI when not in radius
+            }
+        });        
+    }
+
+    const onSelectStore = (e) => {
+        setSelectedStore(e.target.value);
+    }
+
+    const ref = useRef('userInput');
+    return isAuthenticated ?(
         <div>
             <h1>Welcome to eline!</h1>
             {
                 currentStore 
                     ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                    : <button id="getInLine" onClick={onEnterLine}>Enter Line</button>
+                    : <form onSubmit={onSubmit}>
+                        <div className="form-group">
+                            <label>Store: </label>
+                            <select ref={ref}
+                                required
+                                className="form-control"
+                                value={selectedStore}
+                                onChange={onSelectStore}>
+                                {
+                                    stores.map(function (store) {
+                                        return <option
+                                            key={store.name}
+                                            value={store.name}>{store.name}
+                                        </option>;
+                                    })
+                                }
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <input type="submit" value="Enter Line" className="btn btn-primary" />
+                        </div>
+                    </form>
             }
         </div>
     ) : <div>

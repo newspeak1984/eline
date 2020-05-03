@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
+import axios from 'axios';
 import { socket } from "../App";
 import { verifyAuth, getFromQueue } from "../actions";
 
@@ -20,8 +21,17 @@ export default function Admin() {
             if (mounted) {
                 console.log('next: ', data.customerId)
                 setNextCustomer(data.customerId);
+                dispatch(getFromQueue("5eac76442a7020291c92e62f", data.customerId))
             }
         });
+
+        //TODO: dispatch this
+        axios.get('http://localhost:5000/admin/verifySession', { withCredentials: true })
+            .then(res => {
+                console.log(res);
+            }).catch(e => {
+                console.log(e);
+            });
 
         return () => mounted = false;
     }, [nextCustomer])
@@ -29,9 +39,8 @@ export default function Admin() {
     const onGetNext = (e) =>{
         e.preventDefault();
         console.log('get next person');
-        socket.emit('getNext', "5ea751cc1f058dbb81573344");
-        dispatch(getFromQueue("Costco, Markham", "5ea751cc1f058dbb81573344"))
-        // TODO: use state
+        socket.emit('getNext', "5eac76442a7020291c92e62f");
+        // TODO
     }
 
     return(
