@@ -21,15 +21,6 @@ const logger = store => next => action => {
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-// export default function configureStore() {
-//     return store = createStore(
-//         persistedReducer,
-//         composeEnhancers(applyMiddleware(thunkMiddleware, logger))
-//     );
-//     // store.dispatch(verifyAuth());
-//     // return store;
-// };
-
 export const store = createStore(
     persistedReducer,
     composeEnhancers(applyMiddleware(thunkMiddleware, logger))

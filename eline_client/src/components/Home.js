@@ -80,24 +80,14 @@ export default function Home() {
         dispatch(removeFromQueue())
     }
 
-    // return isAuthenticated ? (
-    //     <div>
-    //         <h1>Welcome to eline!</h1>
-    //         {
-    //             currentStore 
-    //                 ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-    //                 : <button id="getInLine" onClick={onEnterLine}>Enter Line</button>
-    //         }
-
-
     function verifyLocation(storeLat, storeLong, fn){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                //var latitude = position.coords.latitude;
-                //var longitude = position.coords.longitude;
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
                 console.log('User Location: ', latitude, longitude)
-                var latitude = 43.846085;
-                var longitude = -79.353386;
+                // let latitude = 43.846085;
+                // let longitude = -79.353386;
                 let distance = getDistance(latitude, longitude, storeLat, storeLong);
                 console.log('Distance: ', distance);
                 if(distance >= 0 && distance <= 400){
