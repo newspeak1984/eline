@@ -1,18 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
+import { verifyAuth } from "../actions";
 
 export default function CreateAccount() {
+    const dispatch = useDispatch();
+
+    const { user, isAuthenticated, isVerifying } = useSelector(state => ({
+        user: state.auth_customer.user,
+        isAuthenticated: state.auth_customer.isAuthenticated,
+        isVerifying: state.auth_customer.isVerifying
+    }), shallowEqual)
+
+    useEffect(() => {
+        dispatch(verifyAuth());
+    }, [])
     
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [phone, setPhone] = useState('');
-    const [currentStore, setCurrentStore] = useState('');
-
-    useEffect(() => {
-
-    })
 
     const onChangeEmail = (e) => {
         setEmail(e.target.value);
@@ -34,10 +42,6 @@ export default function CreateAccount() {
         setPhone(e.target.value);
     }
 
-    const onChangeStore = (e) => {
-        setCurrentStore(e.target.value);
-    }
-
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -45,8 +49,7 @@ export default function CreateAccount() {
             email: email,
             username: username,
             password: password,
-            phone: phone,
-            currentStore: currentStore,
+            phone: phone
         }
 
         axios.post('http://localhost:5000/createAccount/', user)
@@ -72,7 +75,9 @@ export default function CreateAccount() {
     }
 
     return (
-        <div>
+        isVerifying ? <h2>Loading</h2>
+        : isAuthenticated ? <h2>You are already logged in</h2>
+        : <div>
             <h3>Create New Account</h3>
             <form onSubmit={onSubmit}>
                 <div className="form-group">

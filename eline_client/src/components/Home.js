@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
-import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition } from "../actions";
 import { socket } from "../App";
@@ -14,11 +14,15 @@ export default function Home() {
         isVerifying: state.auth_customer.isVerifying,
         currentStore: state.queue_customer.currentStore,
         placement: state.queue_customer.placement,
-        isAddingToQueue: state.queue_customer.isAddingToQueue
+        isAddingToQueue: state.queue_customer.isAddingToQueue,
     }), shallowEqual)
 
     const [stores, setStores] = useState([]);
     const [selectedStore, setSelectedStore] = useState();
+    const [chosenStore, setChosenStore] = useState('');
+    const [inRadius, setInRadius] = useState(true);
+
+    const ref = useRef('userInput');
 
     useEffect(() => {
         let mounted = true;
@@ -135,11 +139,13 @@ export default function Home() {
             if (result) {
                 onEnterLine(storeId);
                 dispatch(addToQueueSuccess(storeId))
+                setInRadius(true);
             }
             else{
                 dispatch(addToQueueFailure());
                 console.log('NOT IN RADIUS');
-                // TODO: handle UI when not in radius
+                setChosenStore(selectedStore);
+                setInRadius(false);
             }
         });        
     }
@@ -147,44 +153,53 @@ export default function Home() {
     const onSelectStore = (e) => {
         setSelectedStore(e.target.value);
     }
-
-    const ref = useRef('userInput');
-    return (isAuthenticated) ?(
-        <div>
-            <h1>Welcome to eline!</h1>
-            {
-                isAddingToQueue
-                    ? <h2>Adding you to {selectedStore}'s line</h2>
-                    : <div> {
-                        currentStore
-                            ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                            : <form>
-                                <div className="form-group">
-                                    <label>Store: </label>
-                                    <select ref={ref}
-                                        required
-                                        className="form-control"
-                                        value={selectedStore}
-                                        onChange={onSelectStore}>
+     
+    return (<div>
+        <h1>Welcome to eline!</h1>
+        { isVerifying 
+            ? <h2>Loading</h2> 
+            : (isAuthenticated) ? (
+                <div>
+                    {
+                        isAddingToQueue
+                            ? <h2>Adding you to {selectedStore}'s line</h2>
+                            : <div> {
+                                currentStore
+                                    ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
+                                    : <form>
+                                        <div className="form-group">
+                                            <label>Store: </label>
+                                            <select ref={ref}
+                                                required
+                                                className="form-control"
+                                                value={selectedStore}
+                                                onChange={onSelectStore}>
+                                                {
+                                                    stores.map(function (store) {
+                                                        return <option
+                                                            key={store.name}
+                                                            value={store.name}>{store.name}
+                                                        </option>;
+                                                    })
+                                                }
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
+                                            <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
+                                        </div>
                                         {
-                                            stores.map(function (store) {
-                                                return <option
-                                                    key={store.name}
-                                                    value={store.name}>{store.name}
-                                                </option>;
-                                            })
+                                            inRadius
+                                                ? ''
+                                                : <h3>You are outside of {chosenStore}'s 500m radius</h3>
                                         }
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                    <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
-                                </div>
-                            </form>
-                    } </div>
-            }
-        </div>
-    ) : <div>
-        <h4>You are not logged in yet</h4>
-    </div>
+                                    </form>
+                            } </div>
+                    }
+                </div>
+            ) : <div>
+                <h4>You are not logged in yet</h4>
+            </div>
+    }
+    </div>)
 }

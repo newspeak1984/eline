@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
+import { verifyAdminAuth } from "../actions";
 
 function AdminCreateAccount() {
+    const dispatch = useDispatch();
+
+    const { isAdminAuthenticated, isVerifying, adminId, storedStoreId } = useSelector(state => ({
+        isVerifying: state.auth_admin.isVerifying,
+        isAdminAuthenticated: state.auth_admin.isAdminAuthenticated,
+        adminId: state.auth_admin.adminId,
+        storedStoreId: state.auth_admin.storeId,
+    }), shallowEqual)
+
     const [storeId, setStoreId] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
-
-    })
+        dispatch(verifyAdminAuth());
+    },[])
 
     const onChangeStoreId = (e) => {
         setStoreId(e.target.value);
@@ -41,6 +52,7 @@ function AdminCreateAccount() {
             console.log(res.data);
             window.location = '/admin/login'
         }).catch(e => {
+            alert("StoreId is incorrect or email already exists")
             console.log(e);
         });
     }
@@ -58,7 +70,9 @@ function AdminCreateAccount() {
     }
 
     return (
-        <div>
+        isVerifying ? <h2>Loading</h2>
+        : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storedStoreId}</h2>
+        : <div>
             <h3>Create New Admin</h3>
             <form onSubmit={onSubmit}>
             <div className="form-group">
