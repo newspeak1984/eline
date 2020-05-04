@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const socket = require('socket.io');
-var CircularBuffer = require("circular-buffer");
 let Store = require('./models/store_model');
 
 require('dotenv').config();
@@ -60,7 +59,7 @@ function addNewStore(storeName, storeId) {
     let newStore = {
         "name": storeName,
         "storeId": storeId,
-        "queue": new CircularBuffer(300)
+        "queue": []
     }
     stores.push(newStore);
 }
@@ -68,27 +67,29 @@ function addNewStore(storeName, storeId) {
 function getStoreLineSize(storeId) {
     for (i = 0; i < stores.length; i++) {
         if (stores[i].storeId == storeId) {
-            return stores[i].queue.size();
+            return stores[i].queue.length;
         }
     }
 }
 
-function addUserToLine(customerId, storeId){
+function addUserToLine(customerId, storeId) {
     stores.map((store) => {
-        if(store.storeId == storeId){
-            store.queue.enq(customerId);
+        if (store.storeId == storeId) {
+            if (store.queue.indexOf(customerId) === -1) {
+                store.queue.push(customerId);
+            }
             // check to see if its at max cap
         }
     })
 }
 
-function getIndexofUser(customerId, storeId){
-    for(i=0; i<stores.length; i++){
-        if(stores[i].storeId == storeId){
-            for(j=0; j<stores[i].queue.size(); j++){
-                if(stores[i].queue.get(j) == customerId){
-                    console.log("INDEX", stores[i].queue.size()-i)
-                    return stores[i].queue.size()-i;
+function getIndexofUser(customerId, storeId) {
+    for (i = 0; i < stores.length; i++) {
+        if (stores[i].storeId == storeId) {
+            for (j = 0; j < stores[i].queue.length; j++) {
+                if (stores[i].queue[j] == customerId) {
+                    console.log("INDEX", j)
+                    return j;
                 }
             }
         }
@@ -96,16 +97,33 @@ function getIndexofUser(customerId, storeId){
 }
 
 function getNext(storeId) {
-    for (i = 0; i < stores.length; i++) {
+    for (i=0; i<stores.length; i++) {
         if (stores[i].storeId == storeId) {
-            try {
-                return stores[i].queue.deq();
+            if (stores[i].queue.length > 0) {
+                let first = stores[i].queue[0];
+                stores[i].queue.splice(0, 1);
+                return first;
             }
-            catch (e) {
-                console.log(e);
+            else {
+                console.log('No Customers in Line');
+                return null;
             }
         }
     }
+}
+
+function removeCustomer(customerId, storeId) {
+    stores.map((store) => {
+        if (store.storeId == storeId) {
+            let index = store.queue.indexOf(customerId);
+            if (index > -1) {
+                store.queue.splice(index, 1);
+            }
+            else {
+                console.log('Customer Id not found');
+            }
+        }
+    })
 }
 
 //Routers
@@ -140,7 +158,6 @@ io.on('connection', (socket) => {
         // FIXME: event received twice??? first with store and customer, then right after with just store????
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
-        console.log(stores);
         customer = (data.customerId) ? data.customerId : customer
         io.sockets.emit('initialPosition', {
             index: index,
@@ -163,6 +180,6 @@ io.on('connection', (socket) => {
 });
 
 module.exports.addStore = addNewStore;
-module.exports.print = () =>{
+module.exports.print = () => {
     console.log(stores);
 }
