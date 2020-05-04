@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { socket } from "../App";
 import { verifyAdminAuth, getFromQueue } from "../actions";
 
@@ -18,9 +18,14 @@ export default function Admin() {
         let mounted = true;
 
         socket.on("getNext", (data) => {
-            if (mounted) {
-                console.log('next: ', data.customerId)
-                dispatch(getFromQueue(data.customerId))
+            if (mounted){
+                if (data.customerId){
+                    console.log('next: ', data.customerId)
+                    dispatch(getFromQueue(data.customerId))
+                } else {
+                    console.log("Line is empty")
+                    alert("The line is currently empty")
+                }
             }
         });
 

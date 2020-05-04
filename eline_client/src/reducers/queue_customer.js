@@ -10,7 +10,8 @@ import {
 export default (state = {
     inQueue: false,
     currentStore: null,
-    isAddingToQueue: false
+    isAddingToQueue: false,
+    placement: null
 }, action) => {
     switch (action.type) {
         case ADD_TO_QUEUE_REQUEST:
