@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
-import { useDispatch, shallowEqual, useSelector } from "react-redux";
+import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition } from "../actions";
 import { socket } from "../App";
@@ -8,23 +8,21 @@ import { socket } from "../App";
 export default function Home() {
     const dispatch = useDispatch();
 
-    const { user, isAuthenticated, currentStore, placement, isVerifying, isAddingToQueue } = useSelector(state => ({
+    const { user, isAuthenticated, currentStore, currentStoreName, placement, isVerifying, isAddingToQueue } = useSelector(state => ({
         user: state.auth_customer.user,
         isAuthenticated: state.auth_customer.isAuthenticated,
         isVerifying: state.auth_customer.isVerifying,
         currentStore: state.queue_customer.currentStore,
+        currentStoreName: state.queue_customer.currentStoreName,
         placement: state.queue_customer.placement,
-        isAddingToQueue: state.queue_customer.isAddingToQueue,
+        isAddingToQueue: state.queue_customer.isAddingToQueue
     }), shallowEqual)
 
     const [stores, setStores] = useState([]);
     const [selectedStore, setSelectedStore] = useState();
-    const [chosenStore, setChosenStore] = useState('');
-    const [inRadius, setInRadius] = useState(true);
-
-    const ref = useRef('userInput');
 
     useEffect(() => {
+        console.log("USEEFFECT")
         let mounted = true;
 
         socket.on('initialPosition', (data) => {
@@ -42,8 +40,15 @@ export default function Home() {
                 console.log('get next', data, placement);
                 // FIXME: maybe try preventing the two requests
                 onGetNext();    
-            } else if (mounted && data.customerId === user && data.storeId === currentStore) {
+            } else if (mounted && data.customerId == user && data.storeId == currentStore) {
                 console.log(`REMOVING ${user} from ${data.storeId}`);
+                axios.get('http://localhost:5000/home/' + data.customerId)
+                    .then(async (res) => {
+                        console.log(res);
+                     })
+                    .catch((error) => {
+                        console.log(error);
+                    })
                 onRemoveFromQueue();
             }
         });
@@ -83,11 +88,11 @@ export default function Home() {
     function verifyLocation(storeLat, storeLong, fn){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                let latitude = position.coords.latitude;
-                let longitude = position.coords.longitude;
+                //let latitude = position.coords.latitude;
+                //let longitude = position.coords.longitude;
 
-                // let latitude = 43.846085;
-                // let longitude = -79.353386;
+                let latitude = 43.846085;
+                let longitude = -79.353386;
 
                 console.log('User Location: ', latitude, longitude)
                 let distance = getDistance(latitude, longitude, storeLat, storeLong);
@@ -139,13 +144,11 @@ export default function Home() {
             if (result) {
                 onEnterLine(storeId);
                 dispatch(addToQueueSuccess(storeId))
-                setInRadius(true);
             }
             else{
                 dispatch(addToQueueFailure());
                 console.log('NOT IN RADIUS');
-                setChosenStore(selectedStore);
-                setInRadius(false);
+                // TODO: handle UI when not in radius
             }
         });        
     }
@@ -153,53 +156,44 @@ export default function Home() {
     const onSelectStore = (e) => {
         setSelectedStore(e.target.value);
     }
-     
-    return (<div>
-        <h1>Welcome to eline!</h1>
-        { isVerifying 
-            ? <h2>Loading</h2> 
-            : (isAuthenticated) ? (
-                <div>
-                    {
-                        isAddingToQueue
-                            ? <h2>Adding you to {selectedStore}'s line</h2>
-                            : <div> {
-                                currentStore
-                                    ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                                    : <form>
-                                        <div className="form-group">
-                                            <label>Store: </label>
-                                            <select ref={ref}
-                                                required
-                                                className="form-control"
-                                                value={selectedStore}
-                                                onChange={onSelectStore}>
-                                                {
-                                                    stores.map(function (store) {
-                                                        return <option
-                                                            key={store.name}
-                                                            value={store.name}>{store.name}
-                                                        </option>;
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className="form-group">
-                                            {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                            <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
-                                        </div>
+
+    const ref = useRef('userInput');
+    return (isAuthenticated) ?(
+        <div>
+            <h1>Welcome to eline!</h1>
+            {
+                isAddingToQueue
+                    ? <h2>Adding you to {selectedStore}'s line</h2>
+                    : <div> {
+                        currentStore
+                            ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
+                            : <form>
+                                <div className="form-group">
+                                    <label>Store: </label>
+                                    <select ref={ref}
+                                        required
+                                        className="form-control"
+                                        value={selectedStore}
+                                        onChange={onSelectStore}>
                                         {
-                                            inRadius
-                                                ? ''
-                                                : <h3>You are outside of {chosenStore}'s 500m radius</h3>
+                                            stores.map(function (store) {
+                                                return <option
+                                                    key={store.name}
+                                                    value={store.name}>{store.name}
+                                                </option>;
+                                            })
                                         }
-                                    </form>
-                            } </div>
-                    }
-                </div>
-            ) : <div>
-                <h4>You are not logged in yet</h4>
-            </div>
-    }
-    </div>)
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
+                                    <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
+                                </div>
+                            </form>
+                    } </div>
+            }
+        </div>
+    ) : <div>
+        <h4>You are not logged in yet</h4>
+    </div>
 }
