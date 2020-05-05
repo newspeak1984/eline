@@ -10,6 +10,7 @@ import {
 export default (state = {
     inQueue: false,
     currentStore: null,
+    currentStoreName: null,
     isAddingToQueue: false,
     placement: null
 }, action) => {
@@ -24,6 +25,7 @@ export default (state = {
                 ...state,
                 inQueue: true,
                 currentStore: action.storeId,
+                currentStoreName: action.storeName,
                 isAddingToQueue: false
             };
         case ADD_TO_QUEUE_FAILURE:
@@ -35,7 +37,9 @@ export default (state = {
             return {
                 ...state,
                 inQueue: false,
-                currentStore: null
+                currentStore: null,
+                currentStoreName: null,
+                placement: null
             };
         case MOVE_UP_IN_QUEUE:
             return {
