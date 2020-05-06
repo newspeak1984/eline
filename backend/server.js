@@ -38,7 +38,7 @@ app.use(session({
     cookie: {
         // change this later when we deploy
         //secure: true, 
-        maxAge: 60 * 60 * 1000
+        maxAge: 60 * 60 * 1000 * 2
     }
 }));
 
@@ -88,7 +88,6 @@ function getIndexofUser(customerId, storeId) {
         if (stores[i].storeId == storeId) {
             for (j = 0; j < stores[i].queue.length; j++) {
                 if (stores[i].queue[j] == customerId) {
-                    console.log("INDEX", j)
                     return j;
                 }
             }
@@ -118,6 +117,7 @@ function removeCustomer(customerId, storeId) {
             let index = store.queue.indexOf(customerId);
             if (index > -1) {
                 store.queue.splice(index, 1);
+                console.log('CUSTOMER REMOVED')
             }
             else {
                 console.log('Customer Id not found');
@@ -139,10 +139,9 @@ app.use('/createAccount', createAccountRouter);
 app.use('/store', storeRouter);
 app.use('/admin', adminRouter);
 
-var server = app.listen(port, () => {
+let server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
-
 
 
 //Setup Websockets
@@ -176,6 +175,17 @@ io.on('connection', (socket) => {
         }
         io.sockets.emit('getNext', nextCustomer);
         //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
+    })
+
+    socket.on('leaveLine', (data) => {
+        console.log('leaveLine', data.storeId, data.customerId, data.index);
+        removeCustomer(data.customerId, data.storeId);
+        io.sockets.emit('leaveLine', {storeId: data.storeId, index: data.index})
+    })
+
+    socket.on('customerArrived', (data) => {
+        console.log('customerArrived', data)
+        io.sockets.emit('customerArrived', data);
     })
 });
 

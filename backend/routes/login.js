@@ -24,7 +24,7 @@ router.route('/setSession').get((req, res, next) => {
 });
 
 router.route('/verifySession').get((req, res, next) => {
-  console.log(req.session);
+  // console.log(req.session);
   Customer.findById(req.session.userId)
     .exec(function (error, user) {
       if (error) {

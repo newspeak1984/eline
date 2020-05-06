@@ -1,10 +1,13 @@
 import {
     GET_FROM_QUEUE_SUCCESS,
-    PURGE_ENTERED_LIST
+    PURGE_ENTERED_LIST,
+    ADD_ARRIVING_CUSTOMER,
+    REMOVE_ENTERED_CUSTOMER
 } from "../actions";
 
 export default (state = {
-    enteredCustomer: ''
+    enteredCustomer: '',
+    enteredCustomers: []
 }, action) => {
     switch (action.type) {
         case GET_FROM_QUEUE_SUCCESS:
@@ -16,6 +19,16 @@ export default (state = {
             return {
                 ...state, 
                 enteredList: []
+            }
+        case ADD_ARRIVING_CUSTOMER:
+            return {
+                ...state,
+                enteredCustomers: action.enteredCustomers
+            }
+        case REMOVE_ENTERED_CUSTOMER:
+            return {
+                ...state,
+                enteredCustomers: action.enteredCustomers
             }
         default:
             return state;
