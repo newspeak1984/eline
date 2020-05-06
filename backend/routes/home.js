@@ -1,6 +1,5 @@
 const router = require('express').Router();
 let Customer = require('../models/customer_model');
-let Store = require('../models/store_model');
 const nodemailer = require("nodemailer");
 
 router.route('/:id').get((req, res) => {

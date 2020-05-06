@@ -10,6 +10,7 @@ import Login from "./components/Login";
 import Admin from "./components/Admin";
 import AdminLogin from "./components/AdminLogin";
 import AdminCreateAccount from "./components/AdminCreateAccount";
+import Profile from "./components/Profile"
 
 export const socket = openSocket('http://localhost:5000');
 
@@ -28,6 +29,7 @@ class App extends React.Component {
           <Route path="/home" component={Home} />
           <Route path="/createAccount" component={CreateAccount} />
           <Route path="/login" component={Login} />
+          <Route path="/profile" component={Profile} />
           <Route path="/admin" exact component={Admin} />
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/createAccount" component={AdminCreateAccount} />
