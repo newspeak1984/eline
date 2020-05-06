@@ -16,7 +16,7 @@ export default function Admin() {
         enteredCustomers: state.queue_admin.enteredCustomers
     }), shallowEqual)
 
-    const [forceRender, setForceRender] = useState(true);
+    const [forceRender, setForceRender] = useState('true');
 
     useEffect(() => {
         let mounted = true;
@@ -34,11 +34,13 @@ export default function Admin() {
         });
 
         socket.on('customerArrived', (data) => {
-            console.log("customer arrived", data);
             if (mounted && data.storeId == storeId){
+                console.log("customer arrived", data, forceRender);
+
                 dispatch(addToArrviedList(data.customerId))
-                // this is to make the page rerender
-                setForceRender(!forceRender)
+                // TODO: investigate this flip flop that doesn't change it in the end
+                setForceRender(enteredCustomers[enteredCustomers.length-1])
+                console.log(forceRender)
             }
         })
 
@@ -56,7 +58,7 @@ export default function Admin() {
     const onAdmitCustomer = (index) => {
         console.log('onadmit', index);
         dispatch(removedEnteredCustomer(index))
-        setForceRender(!forceRender)
+        setForceRender(enteredCustomers[index])
     } 
 
     return(

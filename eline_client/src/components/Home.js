@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
-import { useDispatch, shallowEqual, useSelector } from "react-redux";
+import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
@@ -40,6 +40,14 @@ export default function Home() {
         socket.on('getNext', (data) => {
             // data is {customerId, storeId}
             if (mounted && data.customerId == user && data.storeId == currentStore) {
+                // email sender
+                // axios.get('http://localhost:5000/home/' + data.customerId)
+                // .then(async (res) => {
+                //     console.log(res);
+                //  })
+                // .catch((error) => {
+                //     console.log(error);
+                // })
                 onAllowedIn();
             } else if (mounted && placement > 0) {
                 // TODO: check that customer is matching here
@@ -97,8 +105,8 @@ export default function Home() {
     function verifyLocation(storeLat, storeLong, fn){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                // let latitude = position.coords.latitude;
-                // let longitude = position.coords.longitude;
+                //let latitude = position.coords.latitude;
+                //let longitude = position.coords.longitude;
 
                 let latitude = 43.846085;
                 let longitude = -79.353386;
