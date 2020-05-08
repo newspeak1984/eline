@@ -15,16 +15,11 @@ router.route('/').post((req, res, next) => {
       err.status = 401;
       return next(err);
     } else {
-<<<<<<< HEAD
       res.redirect('/login/setSession?id=' + user._id + '&email=' + user.email);      
-=======
-      res.redirect('/login/setSession?id=' + user._id);
->>>>>>> master
     }
   });
 });
 
-<<<<<<< HEAD
 router.route('/setSession').get((req, res, next) => {  
     let sessionId = req.query.id;
     let email = req.query.email;
@@ -32,13 +27,6 @@ router.route('/setSession').get((req, res, next) => {
     req.session.userId = sessionId;
     req.session.email = email;
     res.send(req.session.userId);
-=======
-router.route('/setSession').get((req, res, next) => {
-  let sessionId = req.query.id;
-  console.log('SESSION ID: ', sessionId);
-  req.session.userId = sessionId;
-  res.send(req.session.userId);
->>>>>>> master
 });
 
 router.route('/verifySession').get((req, res, next) => {

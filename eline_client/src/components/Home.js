@@ -182,13 +182,16 @@ export default function Home() {
         setSelectedStore(e.target.value);
     }
 
-<<<<<<< HEAD
     const onLeaveLine = () => {
         let leaveLine = window.confirm(`Are you sure you want to leave ${currentStoreName}'s line? \nClick "ok" to leave or "cancel" to remain.`)
         if(leaveLine){
             dispatch(removeFromQueue());
             socket.emit('leaveLine', {customerId: user, storeId: currentStore, index: placement, isAllowedIn: isAllowedIn})
         }
+    }
+
+    const onViewProfile = () =>{
+        window.location = '/profile';
     }
      
     return (<div>
@@ -197,6 +200,7 @@ export default function Home() {
             ? <h2>Loading</h2> 
             : (isAuthenticated) ? (
                 <div>
+                    <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
                     {
                         isAddingToQueue
                             ? <h2>Adding you to {selectedStore}'s line</h2>
@@ -246,52 +250,6 @@ export default function Home() {
                 ) : <div><h4>You are not logged in yet</h4></div>
         }
     </div>)
-=======
-    const onViewProfile = () =>{
-        window.location = '/profile';
-    }
-
-    const ref = useRef('userInput');
-    return (isAuthenticated) ?(
-        <div>
-            <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
-            <h1>Welcome to eline!</h1>
-            {
-                isAddingToQueue
-                    ? <h2>Adding you to {selectedStore}'s line</h2>
-                    : <div> {
-                        currentStore
-                            ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                            : <form>
-                                <div className="form-group">
-                                    <label>Store: </label>
-                                    <select ref={ref}
-                                        required
-                                        className="form-control"
-                                        value={selectedStore}
-                                        onChange={onSelectStore}>
-                                        {
-                                            stores.map(function (store) {
-                                                return <option
-                                                    key={store.name}
-                                                    value={store.name}>{store.name}
-                                                </option>;
-                                            })
-                                        }
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                    <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
-                                </div>
-                            </form>
-                    } </div>
-            }
-        </div>
-    ) : <div>
-        <h4>You are not logged in yet</h4>
-    </div>
->>>>>>> master
 }
 
 const styles = {
