@@ -2,27 +2,32 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
-import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition } from "../actions";
+import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
 
 export default function Home() {
     const dispatch = useDispatch();
 
-    const { user, isAuthenticated, currentStore, currentStoreName, placement, isVerifying, isAddingToQueue } = useSelector(state => ({
+    const { user, isAuthenticated, currentStore, currentStoreName, placement, isVerifying, isAddingToQueue, isAllowedIn, email } = useSelector(state => ({
         user: state.auth_customer.user,
+        email: state.auth_customer.email,
         isAuthenticated: state.auth_customer.isAuthenticated,
         isVerifying: state.auth_customer.isVerifying,
         currentStore: state.queue_customer.currentStore,
         currentStoreName: state.queue_customer.currentStoreName,
         placement: state.queue_customer.placement,
-        isAddingToQueue: state.queue_customer.isAddingToQueue
+        isAddingToQueue: state.queue_customer.isAddingToQueue,
+        isAllowedIn: state.queue_customer.isAllowedIn
     }), shallowEqual)
 
     const [stores, setStores] = useState([]);
     const [selectedStore, setSelectedStore] = useState();
+    const [chosenStore, setChosenStore] = useState('');
+    const [inRadius, setInRadius] = useState(true);
+
+    const ref = useRef('userInput');
 
     useEffect(() => {
-        console.log("USEEFFECT")
         let mounted = true;
 
         socket.on('initialPosition', (data) => {
@@ -35,23 +40,30 @@ export default function Home() {
 
         socket.on('getNext', (data) => {
             // data is {customerId, storeId}
-            if (mounted && placement > 0) {
+            if (mounted && data.customerId == user && data.storeId == currentStore) {
+                // email sender
+                // axios.get('http://localhost:5000/home/' + data.customerId)
+                // .then(async (res) => {
+                //     console.log(res);
+                //  })
+                // .catch((error) => {
+                //     console.log(error);
+                // })
+                onAllowedIn();
+            } else if (mounted && placement > 0) {
                 // TODO: check that customer is matching here
                 console.log('get next', data, placement);
                 // FIXME: maybe try preventing the two requests
                 onGetNext();    
-            } else if (mounted && data.customerId == user && data.storeId == currentStore) {
-                console.log(`REMOVING ${user} from ${data.storeId}`);
-                axios.get('http://localhost:5000/home/' + data.customerId)
-                    .then(async (res) => {
-                        console.log(res);
-                     })
-                    .catch((error) => {
-                        console.log(error);
-                    })
-                onRemoveFromQueue();
-            }
+            } 
         });
+
+        socket.on('leaveLine', (data) => {
+            if (mounted && placement > 0 && data.storeId == currentStore && data.index <= placement){
+                console.log('someone left the line')
+                onGetNext();
+            }
+        })
  
         dispatch(verifyAuth());
 
@@ -67,7 +79,7 @@ export default function Home() {
             })
 
         return () => mounted = false;
-    }, [placement])
+    }, [placement, isAllowedIn])
 
     const onEnterLine = (storeId) => {
         socket.emit('enter', {
@@ -82,7 +94,17 @@ export default function Home() {
     }
 
     const onRemoveFromQueue = () => {
-        dispatch(removeFromQueue())
+        let confirmation = window.confirm(`Are you at the entrance of ${currentStoreName}? \nIf you click "ok" and do not arrive in time, you may lose your place in line.`)
+
+        if(confirmation) {
+            dispatch(removeFromQueue())
+            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});        
+        }
+    }
+
+    const onAllowedIn = () => {
+        console.log('onAllowedIn')
+        dispatch(waitForArrival());
     }
 
     function verifyLocation(storeLat, storeLong, fn){
@@ -130,11 +152,12 @@ export default function Home() {
 
         dispatch(addToQueueRequest());
         
-        let storeLat, storeLong, storeId;
+        let storeLat, storeLong, storeId, storeName;
         for(let i=0;i<stores.length;i++){
             if(stores[i].name === selectedStore){
                 storeLat = parseFloat(stores[i].latitude.$numberDecimal);
                 storeLong = parseFloat(stores[i].longitude.$numberDecimal);
+                storeName = stores[i].name;
                 storeId = stores[i]._id;
             }
         }
@@ -143,12 +166,14 @@ export default function Home() {
             console.log('result:' , result);
             if (result) {
                 onEnterLine(storeId);
-                dispatch(addToQueueSuccess(storeId))
+                dispatch(addToQueueSuccess(storeId, storeName))
+                setInRadius(true);
             }
             else{
                 dispatch(addToQueueFailure());
                 console.log('NOT IN RADIUS');
-                // TODO: handle UI when not in radius
+                setChosenStore(selectedStore);
+                setInRadius(false);
             }
         });        
     }
@@ -157,50 +182,74 @@ export default function Home() {
         setSelectedStore(e.target.value);
     }
 
+    const onLeaveLine = () => {
+        let leaveLine = window.confirm(`Are you sure you want to leave ${currentStoreName}'s line? \nClick "ok" to leave or "cancel" to remain.`)
+        if(leaveLine){
+            dispatch(removeFromQueue());
+            socket.emit('leaveLine', {customerId: user, storeId: currentStore, index: placement, isAllowedIn: isAllowedIn})
+        }
+    }
+
     const onViewProfile = () =>{
         window.location = '/profile';
     }
-
-    const ref = useRef('userInput');
-    return (isAuthenticated) ?(
-        <div>
-            <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
-            <h1>Welcome to eline!</h1>
-            {
-                isAddingToQueue
-                    ? <h2>Adding you to {selectedStore}'s line</h2>
-                    : <div> {
-                        currentStore
-                            ? (<h2 id="waitTime">Your position in {currentStore}'s line: {(placement % 1 === 0) ? placement : placement - 0.5}</h2> )
-                            : <form>
-                                <div className="form-group">
-                                    <label>Store: </label>
-                                    <select ref={ref}
-                                        required
-                                        className="form-control"
-                                        value={selectedStore}
-                                        onChange={onSelectStore}>
-                                        {
-                                            stores.map(function (store) {
-                                                return <option
-                                                    key={store.name}
-                                                    value={store.name}>{store.name}
-                                                </option>;
-                                            })
-                                        }
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                    <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
-                                </div>
-                            </form>
-                    } </div>
-            }
-        </div>
-    ) : <div>
-        <h4>You are not logged in yet</h4>
-    </div>
+     
+    return (<div>
+        <h1>Welcome to eline {email}!</h1>
+        { isVerifying 
+            ? <h2>Loading</h2> 
+            : (isAuthenticated) ? (
+                <div>
+                    <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
+                    {
+                        isAddingToQueue
+                            ? <h2>Adding you to {selectedStore}'s line</h2>
+                            : <div> {
+                                currentStore
+                                    ? isAllowedIn
+                                        ? (<div>
+                                            <h2>{email} please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</h2>
+                                            <Button onClick={onRemoveFromQueue} variant="outlined">I'm here!</Button>
+                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                           </div>)
+                                        :(<div>
+                                            <h2 id="waitTime">Your position in {currentStoreName}'s line: {placement + 1}</h2>
+                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                        </div>)
+                                        : <form>
+                                            <div className="form-group">
+                                                <label>Store: </label>
+                                                <select ref={ref}
+                                                    required
+                                                    className="form-control"
+                                                    value={selectedStore}
+                                                    onChange={onSelectStore}>
+                                                    {
+                                                        stores.map(function (store) {
+                                                            return <option
+                                                                key={store.name}
+                                                                value={store.name}>{store.name}
+                                                            </option>;
+                                                        })
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
+                                                <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
+                                            </div>
+                                            {
+                                                inRadius
+                                                    ? ''
+                                                    : <h3>You are outside of {chosenStore}'s 500m radius</h3>
+                                            }
+                                        </form>
+                                } </div>
+                        }
+                    </div>
+                ) : <div><h4>You are not logged in yet</h4></div>
+        }
+    </div>)
 }
 
 const styles = {

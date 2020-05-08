@@ -31,7 +31,8 @@ router.route('/add').post((req, res) => {
               console.log(err);
             }
             else {
-              const newAdmin = new Admin({ email, password, storeId });
+              let storeName = store.name;
+              const newAdmin = new Admin({ email, password, storeId, storeName });
               newAdmin.save()
                 .then(() => res.json(`Admin added at ${store.name}`))
                 .catch(err => res.status(400).json('Error: ' + err));
@@ -53,17 +54,19 @@ router.route('/login').post((req, res, next) => {
       err.status = 401;
       return next(err);
     } else {
-      res.redirect('/admin/setSession?id=' + user._id + '&store=' + user.storeId);      
+      res.redirect('/admin/setSession?id=' + user._id + '&storeId=' + user.storeId + '&storeName=' + user.storeName);      
     }
   });
 });
 
 router.route('/setSession').get((req, res, next) => {  
   let sessionId = req.query.id;
-  let storeId = req.query.store;
+  let storeId = req.query.storeId;
+  let storeName = req.query.storeName;
   console.log('SESSION ID: ', sessionId);
   req.session.userId = sessionId;
   req.session.storeId = storeId;
+  req.session.storeName = storeName;
   res.send(req.session.userId);
 });
 
@@ -79,7 +82,7 @@ router.route('/verifySession').get((req, res, next) => {
           err.status = 400;
           return next(err);
         } else {
-          return res.send({adminId: req.session.sessionId, storeId: req.session.storeId})
+          return res.send({adminId: req.session.userId, storeId: req.session.storeId, storeName: req.session.storeName})
         }
       }
     });

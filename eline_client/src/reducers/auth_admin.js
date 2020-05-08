@@ -11,7 +11,8 @@ export default (state = {
     verifyError: false,
     isAdminAuthenticated: false,
     adminId: '',
-    storeId: ''
+    storeId: '',
+    storeName: ''
 }, action) => {
     switch (action.type) {
         case ADMIN_LOGIN_SUCCESS:
@@ -19,14 +20,16 @@ export default (state = {
                 ...state,
                 isAdminAuthenticated: true,
                 adminId: action.adminId,
-                storeId: action.storeId
+                storeId: action.storeId,
+                storeName: action.storeName
             };
         case ADMIN_LOGOUT_SUCCESS:
             return {
                 ...state,
                 isAdminAuthenticated: false,
                 adminId: '',
-                storeId: ''
+                storeId: '',
+                storeName: ''
             };
         case ADMIN_VERIFY_REQUEST:
             return{
@@ -40,6 +43,7 @@ export default (state = {
                 isAdminAuthenticated: true,
                 adminId: action.adminId,
                 storeId: action.storeId,
+                storeName: action.storeName,
                 verifyError: false
             };
         case ADMIN_VERIFY_FAILURE:
@@ -47,7 +51,10 @@ export default (state = {
                 ...state,
                 isVerifying: false,
                 isAdminAuthenticated: false, 
-                verifyError: true
+                verifyError: true,
+                adminId: '',
+                storeId: '',
+                storeName: ''
             }
         default:
             return state;

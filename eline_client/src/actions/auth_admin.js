@@ -29,7 +29,8 @@ const receiveVerify = (data) => {
     return {
         type: ADMIN_VERIFY_SUCCESS,
         adminId: data.adminId,
-        storeId: data.storeId
+        storeId: data.storeId,
+        storeName: data.storeName
     };
 };
 

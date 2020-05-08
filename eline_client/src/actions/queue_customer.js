@@ -7,6 +7,7 @@ export const ADD_TO_QUEUE_REQUEST= "ADD_TO_QUEUE_REQUEST";
 export const REMOVE_FROM_QUEUE = "REMOVE_FROM_QUEUE";
 export const MOVE_UP_IN_QUEUE = "MOVE_UP_IN_QUEUE";
 export const SET_INITIAL_POSITION = "SET_INITIAL_POSITION";
+export const WAIT_FOR_ARRIVAL = "WAIT_FOR_ARRIVAL";
 
 
 const receiveAddToQueueRequest = () =>  {
@@ -15,10 +16,11 @@ const receiveAddToQueueRequest = () =>  {
     };
 };
 
-const receiveAddToQueueSuccess = (storeId) =>  {
+const receiveAddToQueueSuccess = (storeId, storeName) =>  {
     return {
         type: ADD_TO_QUEUE_SUCCESS,
-        storeId
+        storeId,
+        storeName
     };
 };
 
@@ -44,8 +46,8 @@ export const addToQueueRequest = () => dispatch => {
     dispatch(receiveAddToQueueRequest());
 }
 
-export const addToQueueSuccess = (store) => dispatch => {
-    dispatch(receiveAddToQueueSuccess(store))
+export const addToQueueSuccess = (storeId, storeName) => dispatch => {
+    dispatch(receiveAddToQueueSuccess(storeId, storeName))
 }
 
 export const addToQueueFailure = (store) => dispatch => {
@@ -62,4 +64,8 @@ export const moveUpInQueue = () => dispatch => {
 
 export const setInitialPosition = (pos) => dispatch => {
     dispatch({type: SET_INITIAL_POSITION, pos});
+}
+
+export const waitForArrival = () => dispatch => {
+    dispatch({type: WAIT_FOR_ARRIVAL});
 }

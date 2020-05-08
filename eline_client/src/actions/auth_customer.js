@@ -25,10 +25,11 @@ const requestVerify = () => {
     };
 };
 
-const receiveVerify = (user) => {
+const receiveVerify = (data) => {
     return {
         type: VERIFY_SUCCESS,
-        user
+        user: data.userId, 
+        email: data.email
     };
 };
 

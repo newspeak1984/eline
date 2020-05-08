@@ -10,7 +10,8 @@ export default (state = {
     isVerifying: false,
     verifyError: false,
     isAuthenticated: false,
-    user: ''
+    user: '',
+    email: ''
 }, action) => {
     switch (action.type) {
         case LOGIN_SUCCESS:
@@ -23,7 +24,8 @@ export default (state = {
             return {
                 ...state,
                 isAuthenticated: false,
-                user: {}
+                user: '',
+                email: ''
             };
         case VERIFY_REQUEST:
             return{
@@ -36,6 +38,7 @@ export default (state = {
                 isVerifying: false,
                 isAuthenticated: true,
                 user: action.user,
+                email: action.email,
                 verifyError: false
             };
         case VERIFY_FAILURE:
@@ -43,6 +46,8 @@ export default (state = {
                 ...state,
                 isVerifying: false,
                 isAuthenticated: false, 
+                user: '',
+                email: '',
                 verifyError: true
             }
         default:
