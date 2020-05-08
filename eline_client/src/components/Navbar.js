@@ -17,9 +17,6 @@ export default function Navbar() {
         <Link to="/login" className="nav-link">Login</Link>
         </li>
         <li className="navbar-item">
-        <Link to="/profile" className="nav-link">Profile</Link>
-        </li>
-        <li className="navbar-item">
         <Link to="/admin" className="nav-link">Admin</Link>
         </li>
         <li className="navbar-item">

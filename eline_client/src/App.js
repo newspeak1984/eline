@@ -11,6 +11,8 @@ import Admin from "./components/Admin";
 import AdminLogin from "./components/AdminLogin";
 import AdminCreateAccount from "./components/AdminCreateAccount";
 import Profile from "./components/Profile"
+import ForgotPassword from "./components/ForgotPassword"
+import ResetPassword from  "./components/ResetPassword"
 
 export const socket = openSocket('http://localhost:5000');
 
@@ -28,7 +30,9 @@ class App extends React.Component {
           <Route path="/" exact component={Base} />
           <Route path="/home" component={Home} />
           <Route path="/createAccount" component={CreateAccount} />
-          <Route path="/login" component={Login} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/login/forgotPassword" component={ForgotPassword} />
+          <Route path="/login/resetPassword" component={ResetPassword} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" exact component={Admin} />
           <Route path="/admin/login" component={AdminLogin} />
