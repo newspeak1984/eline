@@ -10,7 +10,7 @@ router.route('/').post((req, res) => {
   const phone = req.body.phone;
 
   //hashing password before saving to database
-  bcrypt.hash(prePassword, 10, (err, password) => {
+  bcrypt.hash(prePassword, 12, (err, password) => {
     if (err) {
       console.log(err);
     }
