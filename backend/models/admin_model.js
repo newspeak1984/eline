@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
 const Schema = mongoose.Schema;
 
 const adminSchema = new Schema({
   email: { type: String, unique: true, required: true, trim: true, dropDups: true },
   password: { type: String, required: true},
   storeId: { type: String, required: true, trim: true },
+  storeName: { type: String, required: true},
 }, {
   timestamps: true,
 });

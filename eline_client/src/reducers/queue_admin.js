@@ -2,18 +2,21 @@ import {
     GET_FROM_QUEUE_SUCCESS,
     PURGE_ENTERED_LIST,
     ADD_ARRIVING_CUSTOMER,
-    REMOVE_ENTERED_CUSTOMER
+    REMOVE_ENTERED_CUSTOMER,
+    REMOVE_ARRIVING_CUSTOMER
 } from "../actions";
 
 export default (state = {
-    enteredCustomer: '',
-    enteredCustomers: []
+    arrivingCustomer: '',
+    arrivingCustomers: [],
+    calledCustomers: 0
 }, action) => {
     switch (action.type) {
         case GET_FROM_QUEUE_SUCCESS:
             return {
                 ...state,
-                enteredCustomer: action.customerId
+                arrivingCustomer: action.customer,
+                calledCustomers: state.calledCustomers + 1
             };
         case PURGE_ENTERED_LIST:
             return {
@@ -23,12 +26,18 @@ export default (state = {
         case ADD_ARRIVING_CUSTOMER:
             return {
                 ...state,
-                enteredCustomers: action.enteredCustomers
+                arrivingCustomers: action.arrivingCustomers,
+                calledCustomers: state.calledCustomers - 1
             }
         case REMOVE_ENTERED_CUSTOMER:
             return {
                 ...state,
-                enteredCustomers: action.enteredCustomers
+                arrivingCustomers: action.arrivingCustomers
+            }
+        case REMOVE_ARRIVING_CUSTOMER:
+            return {
+                ...state,
+                calledCustomers: state.calledCustomers - 1
             }
         default:
             return state;

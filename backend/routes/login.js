@@ -11,15 +11,17 @@ router.route('/').post((req, res, next) => {
       err.status = 401;
       return next(err);
     } else {
-      res.redirect('/login/setSession?id=' + user._id);      
+      res.redirect('/login/setSession?id=' + user._id + '&email=' + user.email);      
     }
   });
 });
 
 router.route('/setSession').get((req, res, next) => {  
     let sessionId = req.query.id;
+    let email = req.query.email;
     console.log('SESSION ID: ', sessionId);
     req.session.userId = sessionId;
+    req.session.email = email;
     res.send(req.session.userId);
 });
 
@@ -35,7 +37,7 @@ router.route('/verifySession').get((req, res, next) => {
           err.status = 400;
           return next(err);
         } else {
-          return res.send(req.session.userId)
+          return res.send({userId: req.session.userId, email: req.session.email})
         }
       }
     });

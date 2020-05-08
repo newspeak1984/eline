@@ -120,7 +120,7 @@ function removeCustomer(customerId, storeId) {
                 console.log('CUSTOMER REMOVED')
             }
             else {
-                console.log('Customer Id not found');
+                console.log('Customer not found in line');
             }
         }
     })
@@ -178,9 +178,9 @@ io.on('connection', (socket) => {
     })
 
     socket.on('leaveLine', (data) => {
-        console.log('leaveLine', data.storeId, data.customerId, data.index);
+        console.log('leaveLine', data.storeId, data.customerId, data.index, data.isAllowedIn);
         removeCustomer(data.customerId, data.storeId);
-        io.sockets.emit('leaveLine', {storeId: data.storeId, index: data.index})
+        io.sockets.emit('leaveLine', {storeId: data.storeId, index: data.index, isAllowedIn: data.isAllowedIn})
     })
 
     socket.on('customerArrived', (data) => {

@@ -8,8 +8,9 @@ import { socket } from "../App";
 export default function Home() {
     const dispatch = useDispatch();
 
-    const { user, isAuthenticated, currentStore, currentStoreName, placement, isVerifying, isAddingToQueue, isAllowedIn } = useSelector(state => ({
+    const { user, isAuthenticated, currentStore, currentStoreName, placement, isVerifying, isAddingToQueue, isAllowedIn, email } = useSelector(state => ({
         user: state.auth_customer.user,
+        email: state.auth_customer.email,
         isAuthenticated: state.auth_customer.isAuthenticated,
         isVerifying: state.auth_customer.isVerifying,
         currentStore: state.queue_customer.currentStore,
@@ -93,8 +94,12 @@ export default function Home() {
     }
 
     const onRemoveFromQueue = () => {
-        dispatch(removeFromQueue())
-        socket.emit('customerArrived', {customerId: user, storeId: currentStore});
+        let confirmation = window.confirm(`Are you at the entrance of ${currentStoreName}? \nIf you click "ok" and do not arrive in time, you may lose your place in line.`)
+
+        if(confirmation) {
+            dispatch(removeFromQueue())
+            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});        
+        }
     }
 
     const onAllowedIn = () => {
@@ -178,12 +183,15 @@ export default function Home() {
     }
 
     const onLeaveLine = () => {
-        dispatch(removeFromQueue());
-        socket.emit('leaveLine', {customerId: user, storeId: currentStore, index: placement})
+        let leaveLine = window.confirm(`Are you sure you want to leave ${currentStoreName}'s line? \nClick "ok" to leave or "cancel" to remain.`)
+        if(leaveLine){
+            dispatch(removeFromQueue());
+            socket.emit('leaveLine', {customerId: user, storeId: currentStore, index: placement, isAllowedIn: isAllowedIn})
+        }
     }
      
     return (<div>
-        <h1>Welcome to eline!</h1>
+        <h1>Welcome to eline {email}!</h1>
         { isVerifying 
             ? <h2>Loading</h2> 
             : (isAuthenticated) ? (
@@ -195,8 +203,9 @@ export default function Home() {
                                 currentStore
                                     ? isAllowedIn
                                         ? (<div>
-                                            <h2>[USER EMAIL] please proceed to the store</h2>
+                                            <h2>{email} please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</h2>
                                             <Button onClick={onRemoveFromQueue} variant="outlined">I'm here!</Button>
+                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
                                            </div>)
                                         :(<div>
                                             <h2 id="waitTime">Your position in {currentStoreName}'s line: {placement + 1}</h2>
