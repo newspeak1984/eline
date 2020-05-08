@@ -132,12 +132,14 @@ const loginRouter = require('./routes/login');
 const createAccountRouter = require('./routes/createAccount');
 const storeRouter = require('./routes/store');
 const adminRouter = require('./routes/admin');
+const profileRouter = require('./routes/profile');
 
 app.use('/home', homeRouter);
 app.use('/login', loginRouter);
 app.use('/createAccount', createAccountRouter);
 app.use('/store', storeRouter);
 app.use('/admin', adminRouter);
+app.use('/profile', profileRouter);
 
 var server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

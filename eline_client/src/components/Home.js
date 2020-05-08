@@ -157,9 +157,14 @@ export default function Home() {
         setSelectedStore(e.target.value);
     }
 
+    const onViewProfile = () =>{
+        window.location = '/profile';
+    }
+
     const ref = useRef('userInput');
     return (isAuthenticated) ?(
         <div>
+            <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
             <h1>Welcome to eline!</h1>
             {
                 isAddingToQueue
@@ -196,4 +201,10 @@ export default function Home() {
     ) : <div>
         <h4>You are not logged in yet</h4>
     </div>
+}
+
+const styles = {
+    "profileButton": {
+        float: 'right'
+    }
 }

@@ -1,11 +1,10 @@
 const router = require('express').Router();
 let Customer = require('../models/customer_model');
-let Store = require('../models/store_model');
 const nodemailer = require("nodemailer");
 
 router.route('/:id').get((req, res) => {
     Customer.findById(req.params.id)
-        .then(async (user) => {
+        .then((user) => {
 
             const transporter = nodemailer.createTransport({
                 service: 'gmail',

@@ -27,6 +27,10 @@ export default function Login() {
         setLoginPassword(e.target.value);
     }
 
+    const onForgotPassword = () => {
+        window.location = '/login/forgotPassword'
+    }
+
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -74,6 +78,7 @@ export default function Login() {
                         <input type="submit" value="Login" className="btn btn-primary" />
                     </div>
                 </form>
+                <button onClick={onForgotPassword}>Forgot Password</button>
             </div>
     )
 }
