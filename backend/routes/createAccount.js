@@ -1,9 +1,19 @@
 const router = require('express').Router();
+const { check, validationResult } = require('express-validator/check');
 let Customer = require('../models/customer_model');
 const bcrypt = require('bcryptjs');
 
+router.post('/', [
+  check('email').exists().isEmail().trim().escape(),
+  check('username').exists().trim().escape(),
+  check('phone').exists().isNumeric().trim().escape().isLength({min: 9}),
+  check('password').exists().isLength({min: 6})
+],(req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
 
-router.route('/').post((req, res) => {
   const email = req.body.email;
   const username = req.body.username;
   const prePassword = req.body.password;

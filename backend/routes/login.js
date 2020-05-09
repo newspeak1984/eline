@@ -4,8 +4,18 @@ const nodemailer = require("nodemailer");
 const async = require('async');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const { check, validationResult } = require('express-validator/check');
 
-router.route('/').post((req, res, next) => {
+
+router.post('/', [
+  check('loginEmail').exists().isEmail().trim().escape(),
+  check('loginPassword').exists()
+], (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
   const loginEmail = req.body.loginEmail;
   const loginPassword = req.body.loginPassword;
 

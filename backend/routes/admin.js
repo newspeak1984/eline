@@ -2,6 +2,8 @@ const router = require('express').Router();
 let Admin = require('../models/admin_model');
 let Store = require('../models/store_model');
 const bcrypt = require('bcryptjs');
+const { check, validationResult } = require('express-validator/check');
+
 
 router.route('/').get((req, res) => {
   Admin.find()
@@ -9,7 +11,16 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post((req, res) => {
+router.post('/add', [
+  check('email').exists().isEmail(),
+  check('storeId').exists().trim().escape(),
+  check('password').exists().isLength({min: 6})
+], (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
   const email = req.body.email;
   const prePassword = req.body.password;
   const storeId = req.body.storeId;
@@ -44,7 +55,15 @@ router.route('/add').post((req, res) => {
     });
 });
 
-router.route('/login').post((req, res, next) => {
+router.post('/login', [
+  check('loginEmail').exists().isEmail().trim().escape(),
+  check('loginPassword').exists()
+], (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  
   const loginEmail = req.body.loginEmail;
   const loginPassword = req.body.loginPassword;
   

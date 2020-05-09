@@ -1,4 +1,5 @@
 const express = require('express');
+const expressValidator = require('express-validator');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -17,6 +18,8 @@ app.use(cors({
     credentials: true // enable set cookie
 }));
 app.use(express.json());
+app.use(expressValidator())
+
 
 const uri = process.env.ATLAS_URI;
 // add try catch? also should whitelist more IP addresses when this goes to prod
@@ -36,7 +39,7 @@ app.use(session({
     saveUninitialized: true,
     store: new MemoryStore(),
     cookie: {
-        // change this later when we deploy
+        // TODO change this later when we deploy
         //secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
