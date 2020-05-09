@@ -151,8 +151,18 @@ let server = app.listen(port, () => {
 
 //Setup Websockets
 const io = socket(server);
+io.origins(['http://localhost:3000'])
+let allClients = [];
 io.on('connection', (socket) => {
     console.log('Successful socket connection', socket.id);
+    allClients.push(socket);
+
+    socket.on('disconnect', () => {
+        console.log('disconnected socket');
+
+        let i = allClients.indexOf(socket);
+        allClients.splice(i, 1);
+    });
 
     socket.on('enter', (data) => {
         //user presses button to get inline
@@ -163,7 +173,7 @@ io.on('connection', (socket) => {
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
         customer = (data.customerId) ? data.customerId : customer
-        io.sockets.emit('initialPosition', {
+        io.sockets.to(socket.id).emit('initialPosition', {
             index: index,
             customerId: data.customerId,
             storeId: data.storeId

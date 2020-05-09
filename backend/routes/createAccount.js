@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 
 router.post('/', [
   check('email').exists().isEmail().trim().escape(),
-  check('username').exists().trim().escape(),
+  check('username').exists().trim().escape().isLength({max: 20}),
   check('phone').exists().isNumeric().trim().escape().isLength({min: 9}),
   check('password').exists().isLength({min: 6})
 ],(req, res) => {
