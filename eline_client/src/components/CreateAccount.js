@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
 import { verifyAuth } from "../actions";
+import './styles.css';
+const logo = require('../graphics/eline.png')
 
 export default function CreateAccount() {
     const dispatch = useDispatch();
@@ -74,64 +76,95 @@ export default function CreateAccount() {
         }
     }
 
+    const styles = {
+        "elineLogo": {
+            marginTop: '20px',
+            marginBottom: '33px',
+            width: '60%'
+        },
+        "divider": {
+            border: '1px solid #A9A9A9',
+            width: '65%',
+            height: '0px',
+            display: 'inline-block'
+        },
+        "signIn": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#009F66',
+        },
+        "bottomText": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#A4A4A4',
+            marginTop: '10px'
+        },
+    }
+
     return (
         isVerifying ? <h2>Loading</h2>
         : isAuthenticated ? <h2>You are already logged in</h2>
-        : <div>
-            <h3>Create New Account</h3>
+        : <div style={{ textAlign: 'center' }}>
+            <a href="http://localhost:3000">
+                <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
+            </a>
             <form onSubmit={onSubmit}>
-                <div className="form-group">
-                    <label>Email: </label>
+                <div className="form-group" style={{marginBottom: '20px'}}>
                     <input type="email"
+                        placeholder="Email"
                         required
-                        className="form-control"
+                        className="InputForm"
                         value={email}
                         onChange={onChangeEmail}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Username: </label>
+                <div className="form-group" style={{marginBottom: '20px'}}>
                     <input type="text"
+                        placeholder="Username"
                         required
-                        className="form-control"
+                        className="InputForm"
                         value={username}
                         onChange={onChangeUsername}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Password: </label>
+                <div className="form-group" style={{marginBottom: '20px'}}>
                     <input type="password"
+                        placeholder="Password"
                         id="password"
                         required
-                        className="form-control"
+                        className="InputForm"
                         value={password}
                         onChange={onChangePassword}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Confirm Password: </label>
+                <div className="form-group" style={{marginBottom: '20px'}}>
                     <input type="password"
+                        placeholder="Confirm Password"
                         id="password_confirm"
                         required
                         onInput={check}
-                        className="form-control"
+                        className="InputForm"
                         value={confirmPassword}
                         onChange={onChangeConfirmPassword}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Phone Number: </label>
+                <div className="form-group" style={{marginBottom: '20px'}}>
                     <input type="tel"
+                        placeholder="Phone Number"
                         required
-                        className="form-control"
+                        className="InputForm"
                         value={phone}
                         onChange={onChangePhone}
                     />
                 </div>
                 <div className="form-group">
-                    <input type="submit" value="Create Account" className="btn btn-primary" />
+                    <input type="submit" value="Sign Up" className="GreenButton" />
                 </div>
             </form>
+            <div style={styles.divider}></div>
+            <p style={styles.bottomText}>Already have an account? <a href="http://localhost:3000/login/" style={styles.signIn}>Sign In</a></p>
         </div>
     )
 

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { withTheme } from "@material-ui/core";
+import './styles.css';
+const logo = require('../graphics/eline.png')
 
 export default function Base() {
 
@@ -10,12 +13,20 @@ export default function Base() {
         window.location = '/login/'
     }
 
+    const styles = {
+        "elineLogo": {
+            marginTop: '210px ',
+            marginBottom: '98px',
+            width: '85%'
+        }
+    }
+
     return(
-        <div>
-            <h1>Welcome to eline!</h1>
-            <button onClick={onClickNewAccount}>Create New Account</button>
+        <div style={{textAlign: 'center'}}>            
+            <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
+            <button onClick={onClickLogin} class="GreenButton">Login</button>
             <br></br>
-            <button onClick={onClickLogin}>Login</button>
+            <button onClick={onClickNewAccount} class="WhiteButton" style={{marginTop: '22px'}}>Sign Up</button>
         </div>            
     )
 }

@@ -4,6 +4,8 @@ import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
+import './styles.css';
+const logo = require('../graphics/eline.png')
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -193,14 +195,59 @@ export default function Home() {
     const onViewProfile = () =>{
         window.location = '/profile';
     }
+
+    const styles = {
+        "elineLogo": {
+            marginTop: '26px',
+            marginBottom: '10px',
+            width: '50%'
+        },
+        "selectText":{
+            textAlign: 'left',
+            fontFamily: 'Helvetica',
+            fontSize: '36px',
+            lineHeight: '42px',
+            marginTop: '56px',
+            color: '#009F66',
+            paddingTop: '7px'
+        },
+        "profileButton": {
+            marginBottom: '35px',
+            float: 'right',
+            fontSize: '24px',
+            fontFamily: 'Helvetica',
+            width: '105px',
+            height: '55px' 
+        },
+        "divider": {
+            border: '1px solid #A9A9A9',
+            width: '80%',
+            height: '0px',
+            display: 'inline-block'
+        },
+        "bottomText": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#A4A4A4',
+            marginTop: '10px'
+        },
+        "learn": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#009F66',
+        },
+    }
      
-    return (<div>
-        <h1>Welcome to eline {email}!</h1>
+    return (<div style={{ textAlign: 'center' }}>
+        {/*<h1>Welcome to eline {email}!</h1>*/}
+        <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
         { isVerifying 
             ? <h2>Loading</h2> 
             : (isAuthenticated) ? (
                 <div>
-                    <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
+                    <button onClick={onViewProfile} class="WhiteButton" style={styles.profileButton}>Profile</button>
                     {
                         isAddingToQueue
                             ? <h2>Adding you to {selectedStore}'s line</h2>
@@ -217,11 +264,11 @@ export default function Home() {
                                             <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
                                         </div>)
                                         : <form>
-                                            <div className="form-group">
-                                                <label>Store: </label>
+                                            <div style={{marginBottom: '23px'}}>
+                                                <p style={styles.selectText}>Select a Store</p>
                                                 <select ref={ref}
                                                     required
-                                                    className="form-control"
+                                                    className="pickList"
                                                     value={selectedStore}
                                                     onChange={onSelectStore}>
                                                     {
@@ -235,8 +282,10 @@ export default function Home() {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                                <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
+                                                <Button onClick={onSubmit} class="GreenButton" variant="outlined">Enter Line</Button>
+                                                <br></br>
+                                                <div style={styles.divider}></div>
+                                                <p style={styles.bottomText}>Can't find a store? <a href="http://localhost:3000/stores/" style={styles.learn}>Learn Why</a></p>
                                             </div>
                                             {
                                                 inRadius
@@ -250,10 +299,4 @@ export default function Home() {
                 ) : <div><h4>You are not logged in yet</h4></div>
         }
     </div>)
-}
-
-const styles = {
-    "profileButton": {
-        float: 'right'
-    }
 }
