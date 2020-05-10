@@ -6,6 +6,7 @@ import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addT
 import { socket } from "../App";
 import './styles.css';
 const logo = require('../graphics/eline.png')
+const baseDesign = require('../graphics/myhumps.png')
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -100,7 +101,8 @@ export default function Home() {
 
         if(confirmation) {
             dispatch(removeFromQueue())
-            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});        
+            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});
+            window.location =  '/profile';       
         }
     }
 
@@ -207,17 +209,15 @@ export default function Home() {
             fontFamily: 'Helvetica',
             fontSize: '36px',
             lineHeight: '42px',
-            marginTop: '56px',
+            marginTop: '30px',
             color: '#009F66',
-            paddingTop: '7px'
         },
         "profileButton": {
-            marginBottom: '35px',
-            float: 'right',
-            fontSize: '24px',
+            marginTop:  '45px' ,
+            fontSize: '20px',
             fontFamily: 'Helvetica',
-            width: '105px',
-            height: '55px' 
+            width: '135px',
+            height: '45px',            
         },
         "divider": {
             border: '1px solid #A9A9A9',
@@ -238,6 +238,29 @@ export default function Home() {
             lineHeight: '16px',
             color: '#009F66',
         },
+        "storeText": {
+            color: '#009F66',
+            fontSize: '36px',
+            fontFamily: 'Helvetica',
+            lineHeight: '42px',
+            display: 'inline-block',
+            marginTop: '20px',
+            marginBottom: '0px'
+        },
+        "divider": {
+            border: '1px solid #A9A9A9',
+            width: '65%',
+            height: '0px',
+            display: 'inline-block'
+        },
+        "placement": {
+            fontFamily: 'Helvetica',
+            fontSize: '144px',
+            lineHeight: '169px',
+            color: '#009F66',
+            marginBottom: '0px',
+            marginTop:'-10px'
+        }
     }
      
     return (<div style={{ textAlign: 'center' }}>
@@ -247,21 +270,41 @@ export default function Home() {
             ? <h2>Loading</h2> 
             : (isAuthenticated) ? (
                 <div>
-                    <button onClick={onViewProfile} class="WhiteButton" style={styles.profileButton}>Profile</button>
+                    <button onClick={onViewProfile} class="WhiteButton" style={styles.profileButton}>My Profile</button>
                     {
                         isAddingToQueue
                             ? <h2>Adding you to {selectedStore}'s line</h2>
-                            : <div> {
+                            : <div> 
+                                
+                                {
                                 currentStore
                                     ? isAllowedIn
                                         ? (<div>
-                                            <h2>{email} please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</h2>
-                                            <Button onClick={onRemoveFromQueue} variant="outlined">I'm here!</Button>
-                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                            <p style={{"marginTop": '25px'}} class="lineText">You are currently</p>
+                                            <p class="lineText">in line at</p>
+                                            <p style={styles.storeText}>{currentStoreName}</p>
+                                            <div style={styles.divider}></div>
+                                            <p class="lineText" style={{"marginTop": '20px'}}>You are</p>
+                                            <p class="placement" style={{"fontSize": '125px'}}>NEXT</p>
+                                            <p class="lineText" style={{"marginTop": '-15px', "marginBottom": '46px'}}>in line</p>
+                                            <p style={{"marginTop": '-20px', "fontFamily": 'Helvetica', "color": '#4F4F4F'}}>Please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</p>
+                                            <Button onClick={onRemoveFromQueue} variant="outlined" class="GreenButton" >I'm here!</Button>
+                                            {/*<Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>*/}
                                            </div>)
-                                        :(<div>
-                                            <h2 id="waitTime">Your position in {currentStoreName}'s line: {placement + 1}</h2>
-                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                        :(<div>  
+                                            <p style={{"marginTop": '25px'}} class="lineText">You are currently</p>
+                                            <p class="lineText">in line at</p>
+                                            <p style={styles.storeText}>{currentStoreName}</p>
+                                            <div style={styles.divider}></div>                                          
+                                            <p class="lineText" style={{"marginTop": '20px'}}>You are</p>
+                                            <p class="placement" style={{"fontSize": '144px'}}>#{placement + 1}</p>
+                                            <p class="lineText" style={{"marginTop": '-15px', "marginBottom": '46px'}}>in line</p>
+                                            <Button onClick={onLeaveLine} variant="outlined" class="GreenButton" style={{"width": '207px'}}>Leave Line</Button>
+                                            <div style={styles.divider}></div>
+                                            <p style={{"marginTop": '10px', "fontSize": '14px', "fontFamily": 'Helvetica', "color": '#A9A9A9'}}>
+                                                Although you may be first in line, please wait until the store administrator has called for the next person. This 
+                                                will be indicated by your placement being changed from "1" to "NEXT".
+                                            </p>
                                         </div>)
                                         : <form>
                                             <div style={{marginBottom: '23px'}}>
@@ -286,7 +329,8 @@ export default function Home() {
                                                 <br></br>
                                                 <div style={styles.divider}></div>
                                                 <p style={styles.bottomText}>Can't find a store? <a href="http://localhost:3000/stores/" style={styles.learn}>Learn Why</a></p>
-                                            </div>
+                                                <img src={baseDesign} class="fixBottom"></img>    
+                                           </div>
                                             {
                                                 inRadius
                                                     ? ''

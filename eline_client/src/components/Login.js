@@ -4,6 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { loginUser, verifyAuth } from "../actions";
 import './styles.css';
 const logo = require('../graphics/eline.png')
+const baseDesign = require('../graphics/myhumps.png')
 
 export default function Login() {
     const dispatch = useDispatch();
@@ -126,7 +127,7 @@ export default function Login() {
                 </form>
                 <div style={styles.divider}></div>
                 <p style={styles.bottomText}>Don't have an account? <a href="http://localhost:3000/createAccount/" style={styles.signUp}>Sign Up</a></p>
-                
+                <img src={baseDesign} class="fixBottom"></img>
             </div>
         )
 }

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { verifyAuth } from "../actions";
 import './styles.css';
 const logo = require('../graphics/eline.png')
+const baseDesign = require('../graphics/myhumps.png')
 
 export default function CreateAccount() {
     const dispatch = useDispatch();
@@ -165,6 +166,7 @@ export default function CreateAccount() {
             </form>
             <div style={styles.divider}></div>
             <p style={styles.bottomText}>Already have an account? <a href="http://localhost:3000/login/" style={styles.signIn}>Sign In</a></p>
+            <img src={baseDesign} class="fixBottom"></img>
         </div>
     )
 
