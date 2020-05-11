@@ -243,15 +243,14 @@ export default function Home() {
             fontSize: '36px',
             fontFamily: 'Helvetica',
             lineHeight: '42px',
-            display: 'inline-block',
             marginTop: '20px',
-            marginBottom: '0px'
+            marginBottom: '15px'
         },
         "divider": {
             border: '1px solid #A9A9A9',
             width: '65%',
             height: '0px',
-            display: 'inline-block'
+            margin: 'auto'
         },
         "placement": {
             fontFamily: 'Helvetica',
@@ -299,7 +298,8 @@ export default function Home() {
                                             <p class="lineText" style={{"marginTop": '20px'}}>You are</p>
                                             <p class="placement" style={{"fontSize": '144px'}}>#{placement + 1}</p>
                                             <p class="lineText" style={{"marginTop": '-15px', "marginBottom": '46px'}}>in line</p>
-                                            <Button onClick={onLeaveLine} variant="outlined" class="GreenButton" style={{"width": '207px'}}>Leave Line</Button>
+                                            <Button onClick={onLeaveLine} variant="outlined" 
+                                                class="GreenButton" style={{"width": '207px', "marginBottom": '22px'}}>Leave Line</Button>
                                             <div style={styles.divider}></div>
                                             <p style={{"marginTop": '10px', "fontSize": '14px', "fontFamily": 'Helvetica', "color": '#A9A9A9'}}>
                                                 Although you may be first in line, please wait until the store administrator has called for the next person. This 
@@ -325,7 +325,7 @@ export default function Home() {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                <Button onClick={onSubmit} class="GreenButton" variant="outlined">Enter Line</Button>
+                                                <Button onClick={onSubmit} class="GreenButton" variant="outlined" style={{"marginBottom": '22px'}}>Enter Line</Button>
                                                 <br></br>
                                                 <div style={styles.divider}></div>
                                                 <p style={styles.bottomText}>Can't find a store? <a href="http://localhost:3000/stores/" style={styles.learn}>Learn Why</a></p>
