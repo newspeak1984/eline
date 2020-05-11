@@ -25,7 +25,6 @@ class App extends React.Component {
     return (
       <Router>
         <div className="container">
-          <Navbar />
           <br/>
           <Route path="/" exact component={Base} />
           <Route path="/home" component={Home} />

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
 import { verifyAdminAuth } from "../actions";
+const logo = require('../graphics/eline.png')
+const baseDesign = require('../graphics/myhumps.png')
 
 function AdminLogin() {
     const dispatch = useDispatch();
@@ -51,34 +53,55 @@ function AdminLogin() {
         setLoginPassword('');
     }
 
+    const styles = {
+        "elineLogo": {
+            marginTop: '20px',
+            marginBottom: '33px',
+            width: '60%'
+        },
+        "adminText":{
+            textAlign: 'center',
+            fontFamily: 'Helvetica',
+            fontSize: '31px',
+            lineHeight: '42px',
+            marginTop: '30px',
+        },
+    }
+
     return(
         isVerifying 
         ? <h2>Loading</h2>
         : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storeId}</h2>
-            : <div>
-                <h3>Admin Login</h3>
+            : <div style={{"textAlign": 'center'}}>
+                <a href="http://localhost:3000">
+                    <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
+                </a>
+                <p style={styles.adminText}>Admin Login</p>
                 <form onSubmit={onSubmit}>
                     <div className="form-group">
-                        <label>Email: </label>
                         <input type="email"
+                            placeholder="Email"
+                            style={{"marginTop": '20px', "marginBottom": '10px'}}
                             required
-                            className="form-control"
+                            className="InputForm"
                             onChange={onChangeLoginEmail}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Password: </label>
                         <input type="password"
+                            placeholder="Password"
+                            style={{"marginTop": '10px', "marginBottom": '20px'}}
                             id="password"
                             required
-                            className="form-control"
+                            className="InputForm"
                             onChange={onChangeLoginPassword}
                         />
                     </div>
                     <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
+                        <input type="submit" value="Login" className="GreenButton" />
                     </div>
                 </form>
+                <img src={baseDesign} class="fixBottom"></img>
             </div>
     )
 }

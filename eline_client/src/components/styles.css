@@ -1,0 +1,88 @@
+.WhiteButton {
+    background: #FFFFFF;
+    width: 144px;
+    height: 66px;
+    border-radius: 50px;
+    border: 3px solid #009F66;
+    box-sizing: border-box;
+    font-size: 24px;
+    font-family: Helvetica;
+    color: #009F66;
+    box-shadow: 0px 4px 4px rgba(0, 159, 102, 0.25);
+}
+
+.GreenButton {
+    background: #009F66;
+    border-radius: 50px;
+    border: #FFFFFF;
+    width: 144px;
+    height: 66px;
+    color: #FFFFFF;
+    font-size: 24px;
+    font-family: Helvetica;
+    font-weight: normal;
+    font-style: normal;
+    box-shadow: 0px 4px 4px rgba(0, 159, 102, 0.25);
+}
+
+::placeholder {
+    color: #009F66
+}
+
+.InputForm {
+    width: 75%;
+    height: 41px;
+    background: #FFFFFF;
+    border: 1px solid rgba(164, 164, 164, 0.5);
+    box-sizing: border-box;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    padding: .375rem .75rem;
+}
+
+.pickList {
+    display: block;
+    width: 100%;
+    height: calc(2em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1.2rem;
+    font-weight: 400;
+    font-family: Helvetica;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.elineLogo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.lineText {
+    font-family: Helvetica;
+    font-size: 18px;
+    line-height: 21px;
+    margin-bottom: 0px;
+    color: #4F4F4F;
+}
+
+.placement {
+    font-family: Helvetica;
+    line-height: 169px;
+    color: #009F66;
+    margin-bottom: 0px;
+    margin-top:-10px;
+}
+
+.fixBottom{
+    position:fixed;
+    bottom:0px;
+    left: -10%;
+    width: 110%;
+    height: 10vh;
+}

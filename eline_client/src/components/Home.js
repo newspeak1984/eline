@@ -4,6 +4,9 @@ import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
+import './styles.css';
+const logo = require('../graphics/eline.png')
+const baseDesign = require('../graphics/myhumps.png')
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -98,7 +101,8 @@ export default function Home() {
 
         if(confirmation) {
             dispatch(removeFromQueue())
-            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});        
+            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});
+            window.location =  '/profile';       
         }
     }
 
@@ -193,35 +197,121 @@ export default function Home() {
     const onViewProfile = () =>{
         window.location = '/profile';
     }
+
+    const styles = {
+        "elineLogo": {
+            marginTop: '26px',
+            marginBottom: '10px',
+            width: '50%'
+        },
+        "selectText":{
+            textAlign: 'left',
+            fontFamily: 'Helvetica',
+            fontSize: '36px',
+            lineHeight: '42px',
+            marginTop: '30px',
+            color: '#009F66',
+        },
+        "profileButton": {
+            marginTop:  '45px' ,
+            fontSize: '20px',
+            fontFamily: 'Helvetica',
+            width: '135px',
+            height: '45px',            
+        },
+        "divider": {
+            border: '1px solid #A9A9A9',
+            width: '80%',
+            height: '0px',
+            display: 'inline-block'
+        },
+        "bottomText": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#A4A4A4',
+            marginTop: '10px'
+        },
+        "learn": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#009F66',
+        },
+        "storeText": {
+            color: '#009F66',
+            fontSize: '36px',
+            fontFamily: 'Helvetica',
+            lineHeight: '42px',
+            marginTop: '20px',
+            marginBottom: '15px'
+        },
+        "divider": {
+            border: '1px solid #A9A9A9',
+            width: '65%',
+            height: '0px',
+            margin: 'auto'
+        },
+        "placement": {
+            fontFamily: 'Helvetica',
+            fontSize: '144px',
+            lineHeight: '169px',
+            color: '#009F66',
+            marginBottom: '0px',
+            marginTop:'-10px'
+        }
+    }
      
-    return (<div>
-        <h1>Welcome to eline {email}!</h1>
+    return (<div style={{ textAlign: 'center' }}>
+        {/*<h1>Welcome to eline {email}!</h1>*/}
+        <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
         { isVerifying 
             ? <h2>Loading</h2> 
             : (isAuthenticated) ? (
                 <div>
-                    <button onClick={onViewProfile} style={styles.profileButton}>View My Profile</button>
+                    <button onClick={onViewProfile} class="WhiteButton" style={styles.profileButton}>My Profile</button>
                     {
                         isAddingToQueue
                             ? <h2>Adding you to {selectedStore}'s line</h2>
-                            : <div> {
+                            : <div> 
+                                
+                                {
                                 currentStore
                                     ? isAllowedIn
                                         ? (<div>
-                                            <h2>{email} please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</h2>
-                                            <Button onClick={onRemoveFromQueue} variant="outlined">I'm here!</Button>
-                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                            <p style={{"marginTop": '25px'}} class="lineText">You are currently</p>
+                                            <p class="lineText">in line at</p>
+                                            <p style={styles.storeText}>{currentStoreName}</p>
+                                            <div style={styles.divider}></div>
+                                            <p class="lineText" style={{"marginTop": '20px'}}>You are</p>
+                                            <p class="placement" style={{"fontSize": '125px'}}>NEXT</p>
+                                            <p class="lineText" style={{"marginTop": '-15px', "marginBottom": '46px'}}>in line</p>
+                                            <p style={{"marginTop": '-20px', "fontFamily": 'Helvetica', "color": '#4F4F4F'}}>Please proceed to the store and click the button once you are there. Show your profile page to the worker at the door to be allowed in</p>
+                                            <Button onClick={onRemoveFromQueue} variant="outlined" class="GreenButton" >I'm here!</Button>
+                                            {/*<Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>*/}
                                            </div>)
-                                        :(<div>
-                                            <h2 id="waitTime">Your position in {currentStoreName}'s line: {placement + 1}</h2>
-                                            <Button onClick={onLeaveLine} variant="outlined">Leave Line</Button>
+                                        :(<div>  
+                                            <p style={{"marginTop": '25px'}} class="lineText">You are currently</p>
+                                            <p class="lineText">in line at</p>
+                                            <p style={styles.storeText}>{currentStoreName}</p>
+                                            <div style={styles.divider}></div>                                          
+                                            <p class="lineText" style={{"marginTop": '20px'}}>You are</p>
+                                            <p class="placement" style={{"fontSize": '144px'}}>#{placement + 1}</p>
+                                            <p class="lineText" style={{"marginTop": '-15px', "marginBottom": '46px'}}>in line</p>
+                                            <Button onClick={onLeaveLine} variant="outlined" 
+                                                class="GreenButton" style={{"width": '207px', "marginBottom": '22px'}}>Leave Line</Button>
+                                            <div style={styles.divider}></div>
+                                            <p style={{"marginTop": '10px', "fontSize": '14px', "fontFamily": 'Helvetica', "color": '#A9A9A9'}}>
+                                                Although you may be first in line, please wait until the store administrator has called for the next person. This 
+                                                will be indicated by your placement being changed from "1" to "NEXT".
+                                            </p>
                                         </div>)
                                         : <form>
-                                            <div className="form-group">
-                                                <label>Store: </label>
+                                            <div style={{marginBottom: '23px'}}>
+                                                <p style={styles.selectText}>Select a Store</p>
                                                 <select ref={ref}
                                                     required
-                                                    className="form-control"
+                                                    className="pickList"
                                                     value={selectedStore}
                                                     onChange={onSelectStore}>
                                                     {
@@ -235,9 +325,12 @@ export default function Home() {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                {/* <input type="submit" value="Enter Line" className="btn btn-primary" /> */}
-                                                <Button onClick={onSubmit} variant="outlined">Enter Line</Button>
-                                            </div>
+                                                <Button onClick={onSubmit} class="GreenButton" variant="outlined" style={{"marginBottom": '22px'}}>Enter Line</Button>
+                                                <br></br>
+                                                <div style={styles.divider}></div>
+                                                <p style={styles.bottomText}>Can't find a store? <a href="http://localhost:3000/stores/" style={styles.learn}>Learn Why</a></p>
+                                                <img src={baseDesign} class="fixBottom"></img>    
+                                           </div>
                                             {
                                                 inRadius
                                                     ? ''
@@ -250,10 +343,4 @@ export default function Home() {
                 ) : <div><h4>You are not logged in yet</h4></div>
         }
     </div>)
-}
-
-const styles = {
-    "profileButton": {
-        float: 'right'
-    }
 }
