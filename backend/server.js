@@ -141,6 +141,16 @@ app.use('/store', storeRouter);
 app.use('/admin', adminRouter);
 app.use('/profile', profileRouter);
 
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(express.static(path.join(__dirname, 'eline_client/build')));
+      
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+      res.sendFile(path.join(__dirname, 'eline_client/build', 'index.html'));
+    });
+  }
+
 let server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
