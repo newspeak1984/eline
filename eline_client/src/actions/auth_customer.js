@@ -52,10 +52,10 @@ export const verifyAuth = () => dispatch => {
 
     axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
     .then(res => {
-        console.log(res);
+        // console.log(res);
         dispatch(receiveVerify(res.data));
     }).catch(e => {
-        console.log(e);
+        // console.log(e);
         dispatch(receiveVerifyFailure());
     });
 };

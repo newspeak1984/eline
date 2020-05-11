@@ -53,10 +53,10 @@ export const verifyAdminAuth = () => dispatch => {
 
     axios.get('http://localhost:5000/admin/verifySession', { withCredentials: true })
     .then(res => {
-        console.log(res);
+        // console.log(res);
         dispatch(receiveVerify(res.data));
     }).catch(e => {
-        console.log(e);
+        // console.log(e);
         dispatch(receiveVerifyFailure());
     });
 };

@@ -7,7 +7,7 @@ const customerSchema = new Schema({
   email: { type: String, unique: true, required: true, trim: true, dropDups: true },
   username: { type: String, required: true, trim: true },
   password: { type: String, required: true},
-  phone: { type: String, unique: true, required: true, dropDups: true },
+  phone: { type: Number, unique: true, required: true, dropDups: true },
   reset_password_token: { type: String, unique: true, required: false},
   reset_password_expires: { type: Date, unique: false, required: false}
 }, {

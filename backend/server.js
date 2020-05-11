@@ -1,4 +1,5 @@
 const express = require('express');
+const expressValidator = require('express-validator');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -17,6 +18,8 @@ app.use(cors({
     credentials: true // enable set cookie
 }));
 app.use(express.json());
+app.use(expressValidator())
+
 
 const uri = process.env.ATLAS_URI;
 // add try catch? also should whitelist more IP addresses when this goes to prod
@@ -36,7 +39,7 @@ app.use(session({
     saveUninitialized: true,
     store: new MemoryStore(),
     cookie: {
-        // change this later when we deploy
+        // TODO change this later when we deploy
         //secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
@@ -148,8 +151,18 @@ let server = app.listen(port, () => {
 
 //Setup Websockets
 const io = socket(server);
+io.origins(['http://localhost:3000'])
+let allClients = [];
 io.on('connection', (socket) => {
     console.log('Successful socket connection', socket.id);
+    allClients.push(socket);
+
+    socket.on('disconnect', () => {
+        console.log('disconnected socket');
+
+        let i = allClients.indexOf(socket);
+        allClients.splice(i, 1);
+    });
 
     socket.on('enter', (data) => {
         //user presses button to get inline
@@ -160,7 +173,7 @@ io.on('connection', (socket) => {
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
         customer = (data.customerId) ? data.customerId : customer
-        io.sockets.emit('initialPosition', {
+        io.sockets.to(socket.id).emit('initialPosition', {
             index: index,
             customerId: data.customerId,
             storeId: data.storeId
