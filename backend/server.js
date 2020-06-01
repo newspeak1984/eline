@@ -12,7 +12,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: ['http://localhost:5000', 'http://localhost:3000'],
+    origin: ['https://e-line-app.herokuapp.com/'],
     methods: ['GET', 'POST'],
     credentials: true // enable set cookie
 }));
@@ -37,7 +37,7 @@ app.use(session({
     store: new MemoryStore(),
     cookie: {
         // change this later when we deploy
-        //secure: true, 
+        secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
 }));
@@ -143,11 +143,11 @@ app.use('/profile', profileRouter);
 
 if (process.env.NODE_ENV === 'production') {
     // Serve any static files
-    app.use(express.static(path.join(__dirname, 'eline_client/build')));
+    app.use(express.static(('../eline_client/build')));
       
     // Handle React routing, return all requests to React app
     app.get('*', function(req, res) {
-      res.sendFile(path.join(__dirname, 'eline_client/build', 'index.html'));
+      res.sendFile('../eline_client/build', 'index.html');
     });
   }
 
