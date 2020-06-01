@@ -28,7 +28,7 @@ class ResetPassword extends React.Component {
     onSubmit = (e) => {
         e.preventDefault();
         const values = queryString.parse(this.props.location.search);
-        axios.post('http://localhost:5000/login/resetPassword?token=' + values.token, { newPassword: this.state.newPassword})
+        axios.post('https://e-line-app.herokuapp.com/login/resetPassword?token=' + values.token, { newPassword: this.state.newPassword})
         .then(res => {
             console.log(res);
             alert("Successfully updated your password!");

@@ -13,7 +13,7 @@ export default function Profile() {
     }), shallowEqual);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/profile/' + user)
+        axios.get('https://e-line-app.herokuapp.com/profile/' + user)
             .then(async (res) => {
                 if(!status){
                     setProfile(res.data);
@@ -35,7 +35,7 @@ export default function Profile() {
 
     return (
         <div>
-            <a href="http://localhost:3000/home">
+            <a href="https://e-line-app.herokuapp.com/home">
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
             </a>
             <h1>Your Profile</h1>

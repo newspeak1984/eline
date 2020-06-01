@@ -55,7 +55,7 @@ export default function CreateAccount() {
             phone: phone
         }
 
-        axios.post('http://localhost:5000/createAccount/', user)
+        axios.post('https://e-line-app.herokuapp.com/createAccount/', user)
         .then(res => {
             console.log(res.data);
             window.location = '/home/'
@@ -108,7 +108,7 @@ export default function CreateAccount() {
         isVerifying ? <h2>Loading</h2>
         : isAuthenticated ? <h2>You are already logged in</h2>
         : <div style={{ textAlign: 'center' }}>
-            <a href="http://localhost:3000">
+            <a href="https://e-line-app.herokuapp.com/">
                 <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
             </a>
             <form onSubmit={onSubmit}>
@@ -165,7 +165,7 @@ export default function CreateAccount() {
                 </div>
             </form>
             <div style={styles.divider}></div>
-            <p style={styles.bottomText}>Already have an account? <a href="http://localhost:3000/login/" style={styles.signIn}>Sign In</a></p>
+            <p style={styles.bottomText}>Already have an account? <a href="https://e-line-app.herokuapp.com/login/" style={styles.signIn}>Sign In</a></p>
             <img src={baseDesign} class="fixBottom"></img>
         </div>
     )

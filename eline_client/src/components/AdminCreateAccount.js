@@ -49,7 +49,7 @@ function AdminCreateAccount() {
             storeId: storeId,
         }
 
-        axios.post('http://localhost:5000/admin/add', admin)
+        axios.post('https://e-line-app.herokuapp.com/admin/add', admin)
         .then(res => {
             console.log(res.data);
             window.location = '/admin/login'
@@ -90,7 +90,7 @@ function AdminCreateAccount() {
         isVerifying ? <h2>Loading</h2>
         : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storedStoreId}</h2>
         : <div style={{"textAlign": 'center'}}>
-            <a href="http://localhost:3000">
+            <a href="https://e-line-app.herokuapp.com/">
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
             </a>
             <p style={styles.adminText}>Create New Admin</p>

@@ -40,7 +40,7 @@ function AdminLogin() {
 
         axios.defaults.withCredentials = true;
 
-        axios.post('http://localhost:5000/admin/login', credentials)
+        axios.post('https://e-line-app.herokuapp.com/admin/login', credentials)
         .then(res => {
             console.log(res);
             window.location = '/admin/'
@@ -73,7 +73,7 @@ function AdminLogin() {
         ? <h2>Loading</h2>
         : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storeId}</h2>
             : <div style={{"textAlign": 'center'}}>
-                <a href="http://localhost:3000">
+                <a href="https://e-line-app.herokuapp.com/">
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
                 </a>
                 <p style={styles.adminText}>Admin Login</p>

@@ -14,7 +14,7 @@ import Profile from "./components/Profile"
 import ForgotPassword from "./components/ForgotPassword"
 import ResetPassword from  "./components/ResetPassword"
 
-export const socket = openSocket('http://localhost:5000');
+export const socket = openSocket('https://e-line-app.herokuapp.com/');
 
 class App extends React.Component {
   constructor(){

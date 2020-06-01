@@ -45,7 +45,7 @@ export default function Home() {
             // data is {customerId, storeId}
             if (mounted && data.customerId == user && data.storeId == currentStore) {
                 // email sender
-                // axios.get('http://localhost:5000/home/' + data.customerId)
+                // axios.get('https://e-line-app.herokuapp.com/home/' + data.customerId)
                 // .then(async (res) => {
                 //     console.log(res);
                 //  })
@@ -70,7 +70,7 @@ export default function Home() {
  
         dispatch(verifyAuth());
 
-        axios.get('http://localhost:5000/store/')
+        axios.get('https://e-line-app.herokuapp.com/store/')
             .then(response => {
                 if (response.data.length > 0) {
                     setStores(response.data.map(store => store))
@@ -328,7 +328,7 @@ export default function Home() {
                                                 <Button onClick={onSubmit} class="GreenButton" variant="outlined" style={{"marginBottom": '22px'}}>Enter Line</Button>
                                                 <br></br>
                                                 <div style={styles.divider}></div>
-                                                <p style={styles.bottomText}>Can't find a store? <a href="http://localhost:3000/stores/" style={styles.learn}>Learn Why</a></p>
+                                                <p style={styles.bottomText}>Can't find a store? <a href="https://e-line-app.herokuapp.com/stores/" style={styles.learn}>Learn Why</a></p>
                                                 <img src={baseDesign} class="fixBottom"></img>    
                                            </div>
                                             {

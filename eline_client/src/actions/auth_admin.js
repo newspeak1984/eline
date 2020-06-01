@@ -51,7 +51,7 @@ export const logoutUser = () => dispatch => {
 export const verifyAdminAuth = () => dispatch => {
     dispatch(requestVerify());
 
-    axios.get('http://localhost:5000/admin/verifySession', { withCredentials: true })
+    axios.get('https://e-line-app.herokuapp.com/admin/verifySession', { withCredentials: true })
     .then(res => {
         console.log(res);
         dispatch(receiveVerify(res.data));

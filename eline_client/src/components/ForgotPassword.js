@@ -13,7 +13,7 @@ export default function ForgotPassword() {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        axios.post('http://localhost:5000/login/forgotPassword', { "email": recoverEmail })
+        axios.post('https://e-line-app.herokuapp.com/login/forgotPassword', { "email": recoverEmail })
             .then(res => {
                 alert('Sent Recovery Email!')
                 window.location = '/login';
