@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
 import { verifyAdminAuth } from "../actions";
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -40,12 +42,10 @@ function AdminLogin() {
 
         axios.defaults.withCredentials = true;
 
-        axios.post('https://e-line-app.herokuapp.com/admin/login', credentials)
+        axios.post(config.url.API_URL + '/admin/login', credentials)
         .then(res => {
-            console.log(res);
             window.location = '/admin/'
         }).catch(e => {
-            console.log(e);
             alert("Incorrect email and/or password")
         });
 
@@ -73,7 +73,7 @@ function AdminLogin() {
         ? <h2>Loading</h2>
         : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storeId}</h2>
             : <div style={{"textAlign": 'center'}}>
-                <a href="https://e-line-app.herokuapp.com/">
+                <a href={config.url.ELINE_URL}>
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
                 </a>
                 <p style={styles.adminText}>Admin Login</p>

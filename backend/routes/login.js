@@ -74,7 +74,7 @@ router.route('/forgotPassword').post((req, res, next) => {
       });
     },
     function (token, user, done) {
-      let url = 'https://e-line-app.herokuapp.com/login/resetPassword?token=' + token
+      let url = config.url.API_URL + '/login/resetPassword?token=' + token
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',

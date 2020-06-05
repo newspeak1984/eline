@@ -11,8 +11,15 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+let origin =[];
+if (process.env.NODE_ENV == 'production') {
+    origin = ['https://e-line-app.herokuapp.com/'];
+} else if (process.env.NODE_ENV == 'development') {
+    origin = ['http://localhost:5000', 'http://localhost:3000']
+}
+
 app.use(cors({
-    origin: ['https://e-line-app.herokuapp.com/'],
+    origin: origin,
     methods: ['GET', 'POST'],
     credentials: true // enable set cookie
 }));
@@ -37,7 +44,7 @@ app.use(session({
     store: new MemoryStore(),
     cookie: {
         // change this later when we deploy
-        secure: true, 
+        // secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
 }));
@@ -104,7 +111,6 @@ function getNext(storeId) {
                 return first;
             }
             else {
-                console.log('No Customers in Line');
                 return null;
             }
         }
@@ -117,10 +123,6 @@ function removeCustomer(customerId, storeId) {
             let index = store.queue.indexOf(customerId);
             if (index > -1) {
                 store.queue.splice(index, 1);
-                console.log('CUSTOMER REMOVED')
-            }
-            else {
-                console.log('Customer not found in line');
             }
         }
     })
@@ -163,10 +165,6 @@ io.on('connection', (socket) => {
 
     socket.on('enter', (data) => {
         //user presses button to get inline
-        //make changes to add to circular buffer with data (should contain customerId)
-        //emit line size at time of entry to specific user so
-        console.log("enter: " + JSON.stringify(data));
-        // FIXME: event received twice??? first with store and customer, then right after with just store????
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
         customer = (data.customerId) ? data.customerId : customer
@@ -190,14 +188,17 @@ io.on('connection', (socket) => {
     })
 
     socket.on('leaveLine', (data) => {
-        console.log('leaveLine', data.storeId, data.customerId, data.index, data.isAllowedIn);
         removeCustomer(data.customerId, data.storeId);
         io.sockets.emit('leaveLine', {storeId: data.storeId, index: data.index, isAllowedIn: data.isAllowedIn})
     })
 
     socket.on('customerArrived', (data) => {
-        console.log('customerArrived', data)
         io.sockets.emit('customerArrived', data);
+    })
+
+    socket.on('removeCustomer', (data) => {
+        console.log('removeCustomer', data)
+        io.sockets.emit('removeCustomer', data);
     })
 });
 

@@ -5,6 +5,8 @@ import Button from '@material-ui/core/Button';
 import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
 import './styles.css';
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -34,10 +36,14 @@ export default function Home() {
         let mounted = true;
 
         socket.on('initialPosition', (data) => {
-            console.log('intial position', mounted, data);
             if (mounted && data.customerId === user) {
-                console.log(data.index);
                 dispatch(setInitialPosition(data.index))
+            }
+        })
+
+        socket.on('removeCustomer', (data) => {
+            if (mounted && currentStore && data === email) {
+                dispatch(removeFromQueue());
             }
         })
 
@@ -45,7 +51,7 @@ export default function Home() {
             // data is {customerId, storeId}
             if (mounted && data.customerId == user && data.storeId == currentStore) {
                 // email sender
-                // axios.get('https://e-line-app.herokuapp.com/home/' + data.customerId)
+                // axios.get(config.url.API_URL + '/home/' + data.customerId)
                 // .then(async (res) => {
                 //     console.log(res);
                 //  })
@@ -54,23 +60,19 @@ export default function Home() {
                 // })
                 onAllowedIn();
             } else if (mounted && placement > 0) {
-                // TODO: check that customer is matching here
-                console.log('get next', data, placement);
-                // FIXME: maybe try preventing the two requests
                 onGetNext();    
             } 
         });
 
         socket.on('leaveLine', (data) => {
             if (mounted && placement > 0 && data.storeId == currentStore && data.index <= placement){
-                console.log('someone left the line')
                 onGetNext();
             }
         })
  
         dispatch(verifyAuth());
 
-        axios.get('https://e-line-app.herokuapp.com/store/')
+        axios.get(config.url.API_URL + '/store/')
             .then(response => {
                 if (response.data.length > 0) {
                     setStores(response.data.map(store => store))
@@ -78,7 +80,6 @@ export default function Home() {
                 }                
             })
             .catch((error) => {
-                console.log(error);
             })
 
         return () => mounted = false;
@@ -92,7 +93,6 @@ export default function Home() {
     }
 
     const onGetNext = () => {
-        console.log('current placement', placement); 
         dispatch(moveUpInQueue())
     }
 
@@ -107,7 +107,6 @@ export default function Home() {
     }
 
     const onAllowedIn = () => {
-        console.log('onAllowedIn')
         dispatch(waitForArrival());
     }
 
@@ -167,7 +166,6 @@ export default function Home() {
         }
         console.log('Store Location: ', storeLat, storeLong)
         verifyLocation(storeLat, storeLong, (result) => {
-            console.log('result:' , result);
             if (result) {
                 onEnterLine(storeId);
                 dispatch(addToQueueSuccess(storeId, storeName))
@@ -259,7 +257,13 @@ export default function Home() {
             color: '#009F66',
             marginBottom: '0px',
             marginTop:'-10px'
-        }
+        },
+        "login": {
+            fontFamily: 'Helvetica',
+            fontSized: '14px',
+            lineHeight: '16px',
+            color: '#009F66',
+        },
     }
      
     return (<div style={{ textAlign: 'center' }}>
@@ -328,7 +332,7 @@ export default function Home() {
                                                 <Button onClick={onSubmit} class="GreenButton" variant="outlined" style={{"marginBottom": '22px'}}>Enter Line</Button>
                                                 <br></br>
                                                 <div style={styles.divider}></div>
-                                                <p style={styles.bottomText}>Can't find a store? <a href="https://e-line-app.herokuapp.com/stores/" style={styles.learn}>Learn Why</a></p>
+                                                <p style={styles.bottomText}>Can't find a store? <a href={config.url.ELINE_URL + "/stores/"} style={styles.learn}>Learn Why</a></p>
                                                 <img src={baseDesign} class="fixBottom"></img>    
                                            </div>
                                             {
@@ -340,7 +344,10 @@ export default function Home() {
                                 } </div>
                         }
                     </div>
-                ) : <div><h4>You are not logged in yet</h4></div>
+                ) : <div>
+                        <h4>You are not logged in yet</h4>
+                        <a href={config.url.ELINE_URL + "/login/"} style={styles.login}>Login</a>
+                    </div>
         }
     </div>)
 }

@@ -14,7 +14,9 @@ import Profile from "./components/Profile"
 import ForgotPassword from "./components/ForgotPassword"
 import ResetPassword from  "./components/ResetPassword"
 
-export const socket = openSocket('https://e-line-app.herokuapp.com/');
+import { config } from './Constants'
+
+export const socket = openSocket(config.url.API_URL);
 
 class App extends React.Component {
   constructor(){

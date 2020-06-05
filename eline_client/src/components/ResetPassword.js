@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -28,14 +30,12 @@ class ResetPassword extends React.Component {
     onSubmit = (e) => {
         e.preventDefault();
         const values = queryString.parse(this.props.location.search);
-        axios.post('https://e-line-app.herokuapp.com/login/resetPassword?token=' + values.token, { newPassword: this.state.newPassword})
+        axios.post(config.url.API_URL + '/login/resetPassword?token=' + values.token, { newPassword: this.state.newPassword})
         .then(res => {
-            console.log(res);
             alert("Successfully updated your password!");
             window.location = '/login'
         }).catch(e => {
             alert("Sorry, something went wrong!");
-            console.log(e);
         });
         
     }

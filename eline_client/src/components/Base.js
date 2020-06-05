@@ -23,10 +23,10 @@ export default function Base() {
 
     return(
         <div style={{textAlign: 'center'}}>            
-            <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
-            <button onClick={onClickLogin} class="GreenButton">Login</button>
+            <img src={logo} className="elineLogo" style={styles.elineLogo}></img>
+            <button onClick={onClickLogin} className="GreenButton">Login</button>
             <br></br>
-            <button onClick={onClickNewAccount} class="WhiteButton" style={{marginTop: '22px'}}>Sign Up</button>
+            <button onClick={onClickNewAccount} className="WhiteButton" style={{marginTop: '22px'}}>Sign Up</button>
         </div>            
     )
 }

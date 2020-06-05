@@ -3,6 +3,8 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
 import { verifyAuth } from "../actions";
 import './styles.css';
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -55,13 +57,11 @@ export default function CreateAccount() {
             phone: phone
         }
 
-        axios.post('https://e-line-app.herokuapp.com/createAccount/', user)
+        axios.post(config.url.API_URL + '/createAccount/', user)
         .then(res => {
-            console.log(res.data);
             window.location = '/home/'
         }).catch(e => {
             alert("Sorry, that email/phone number may already be registered");
-            console.log(e);
         });
     }
 
@@ -108,7 +108,7 @@ export default function CreateAccount() {
         isVerifying ? <h2>Loading</h2>
         : isAuthenticated ? <h2>You are already logged in</h2>
         : <div style={{ textAlign: 'center' }}>
-            <a href="https://e-line-app.herokuapp.com/">
+            <a href={config.url.ELINE_URL}>
                 <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
             </a>
             <form onSubmit={onSubmit}>
@@ -165,7 +165,7 @@ export default function CreateAccount() {
                 </div>
             </form>
             <div style={styles.divider}></div>
-            <p style={styles.bottomText}>Already have an account? <a href="https://e-line-app.herokuapp.com/login/" style={styles.signIn}>Sign In</a></p>
+            <p style={styles.bottomText}>Already have an account? <a href={config.url.ELINE_URL + "/login/"} style={styles.signIn}>Sign In</a></p>
             <img src={baseDesign} class="fixBottom"></img>
         </div>
     )
