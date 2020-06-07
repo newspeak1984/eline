@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { connect, useDispatch, shallowEqual, useSelector } from "react-redux";
 import Button from '@material-ui/core/Button';
-import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setInitialPosition, waitForArrival } from "../actions";
+import { verifyAuth, removeFromQueue, addToQueueRequest, addToQueueSuccess, addToQueueFailure, moveUpInQueue, setPosition, waitForArrival } from "../actions";
 import { socket } from "../App";
 import './styles.css';
 import { config } from '../Constants';
@@ -35,15 +35,9 @@ export default function Home() {
     useEffect(() => {
         let mounted = true;
 
-        socket.on('initialPosition', (data) => {
-            if (mounted && data.customerId === user) {
-                dispatch(setInitialPosition(data.index))
-            }
-        })
-
-        socket.on('removeCustomer', (data) => {
-            if (mounted && currentStore && data === email) {
-                dispatch(removeFromQueue());
+        socket.on('getPosition', (data) => {
+            if (mounted && data.customerId === user && data.index > 0) {
+                dispatch(setPosition(data.index))
             }
         })
 
@@ -83,7 +77,7 @@ export default function Home() {
             })
 
         return () => mounted = false;
-    }, [placement, isAllowedIn])
+    }, [placement, isAllowedIn]);
 
     const onEnterLine = (storeId) => {
         socket.emit('enter', {
@@ -101,8 +95,7 @@ export default function Home() {
 
         if(confirmation) {
             dispatch(removeFromQueue())
-            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});
-            window.location =  '/profile';       
+            socket.emit('customerArrived', {customerId: user, email: email, storeId: currentStore});  
         }
     }
 

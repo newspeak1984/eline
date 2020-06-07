@@ -32,17 +32,17 @@ export default function Profile() {
             })
     },[]);
 
-    useEffect(() => {
-        let mounted = true;
+    // useEffect(() => {
+    //     let mounted = true;
 
-        socket.on('removeCustomer', (data) => {
-            if (mounted && currentStore && data === email) {
-                dispatch(removeFromQueue());
-            }
-        })
+    //     socket.on('removeCustomer', (data) => {
+    //         if (mounted && currentStore && data === email) {
+    //             dispatch(removeFromQueue());
+    //         }
+    //     })
 
-        return () => mounted = false;
-    })
+    //     return () => mounted = false;
+    // })
 
     const styles = {
         "elineLogo": {

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const MongoStore = require('connect-mongo')(session);
 const socket = require('socket.io');
 let Store = require('./models/store_model');
@@ -26,24 +27,28 @@ app.use(cors({
 app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
-// add try catch? also should whitelist more IP addresses when this goes to prod
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 connection.once('open', () => {
     console.log("MongoDB database connection established successfully");
 });
 
+const store = new MongoDBStore({
+    uri: uri,
+    collection: 'sessions'
+  });
+
 //use sessions for tracking logins
 app.set('trust proxy', 1);
-var MemoryStore = session.MemoryStore;
+// var MemoryStore = session.MemoryStore;
 app.use(session({
     name: 'backend.sid',
     secret: 'yah yeet',
     resave: false,
     saveUninitialized: true,
-    store: new MemoryStore(),
+    store: store,
     cookie: {
-        // change this later when we deploy
+        // TODO change this later when we deploy
         // secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
@@ -85,7 +90,7 @@ function addUserToLine(customerId, storeId) {
             if (store.queue.indexOf(customerId) === -1) {
                 store.queue.push(customerId);
             }
-            // check to see if its at max cap
+            // TODO check to see if its at max cap
         }
     })
 }
@@ -100,6 +105,7 @@ function getIndexofUser(customerId, storeId) {
             }
         }
     }
+    return -1;
 }
 
 function getNext(storeId) {
@@ -168,7 +174,7 @@ io.on('connection', (socket) => {
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
         customer = (data.customerId) ? data.customerId : customer
-        io.sockets.emit('initialPosition', {
+        io.sockets.emit('getPosition', {
             index: index,
             customerId: data.customerId,
             storeId: data.storeId
@@ -184,7 +190,6 @@ io.on('connection', (socket) => {
             storeId: data
         }
         io.sockets.emit('getNext', nextCustomer);
-        //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
     })
 
     socket.on('leaveLine', (data) => {

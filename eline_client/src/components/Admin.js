@@ -70,7 +70,6 @@ export default function Admin() {
         let enter = window.confirm(`Remove ${customer} from line? \nPlease do so if they have entered.`)
         if (enter) {
             dispatch(removeEnteringCustomer(index))
-            socket.emit('removeCustomer', customer)
             setForceRender(arrivingCustomers[index])
             setCalledCustomersLocal(calledCustomersLocal-1);
         }
