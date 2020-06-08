@@ -36,7 +36,7 @@ export default function Home() {
         let mounted = true;
 
         socket.on('getPosition', (data) => {
-            if (mounted && data.customerId === user && data.index > 0) {
+            if (mounted && data.customerId === user) {
                 dispatch(setPosition(data.index))
             }
         })

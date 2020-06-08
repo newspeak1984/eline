@@ -211,3 +211,4 @@ module.exports.addStore = addNewStore;
 module.exports.print = () => {
     console.log(stores);
 }
+module.exports = server;

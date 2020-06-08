@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "aws-sdk": "^2.663.0",
@@ -13,6 +12,7 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
+    "test": "jest",
     "dev": "concurrently \"cd backend && nodemon server.js\" \"cd eline_client && npm start\"",
     "server": "cd backend && nodemon server.js",
     "client": "cd eline_client && npm start",
@@ -33,5 +33,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
   }
 }
