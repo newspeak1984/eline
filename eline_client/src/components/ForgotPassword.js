@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from 'axios';
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -13,12 +15,12 @@ export default function ForgotPassword() {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        axios.post('http://localhost:5000/login/forgotPassword', { "email": recoverEmail })
+        axios.post(config.url.API_URL + '/login/forgotPassword', { "email": recoverEmail })
             .then(res => {
                 alert('Sent Recovery Email!')
                 window.location = '/login';
             }).catch(e => {
-                console.log(e);
+                
             });
     }
 

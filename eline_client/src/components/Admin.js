@@ -28,12 +28,9 @@ export default function Admin() {
         socket.on("getNext", (data) => {
             if (mounted){
                 if (data.customerId){
-                    console.log('next: ', data.customerId)
                     setCalledCustomersLocal(calledCustomersLocal+1);
-                    // FIXME: didn't work all the time
                     dispatch(getFromQueue(data.customerId))
                 } else {
-                    console.log("Line is empty")
                     alert("The line is currently empty")
                 }
             }
@@ -41,18 +38,14 @@ export default function Admin() {
 
         socket.on('customerArrived', (data) => {
             if (mounted && data.storeId == storeId){
-                console.log("customer arrived", data, forceRender);
 
                 dispatch(addToArrviedList(data.email))
-                // TODO: investigate this flip flop that doesn't change it in the end
                 setForceRender(arrivingCustomers[arrivingCustomers.length-1])
-                console.log(forceRender)
             }
         })
 
         socket.on('leaveLine', (data) => {
             if (mounted && data.storeId == storeId && data.isAllowedIn){
-                console.log('allowed customer left line')
                 dispatch(removeArrivingCustomer());
             }
         })

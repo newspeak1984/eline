@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { loginUser, verifyAuth } from "../actions";
 import './styles.css';
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -47,14 +49,12 @@ export default function Login() {
 
         axios.defaults.withCredentials = true;
 
-        axios.post('http://localhost:5000/login/', credentials)
+        axios.post(config.url.API_URL + '/login/', credentials)
             .then(res => {
-                console.log(res);
                 dispatch(loginUser(res.data));
                 window.location = '/home';
             }).catch(e => {
                 alert("Incorrect email and/or password")
-                console.log(e);
             });
     }
 
@@ -99,7 +99,7 @@ export default function Login() {
     return isVerifying ? <h2>Loading</h2>
         : (isAuthenticated ? <div><h2>You are already logged in</h2></div>
             : <div style={{ textAlign: 'center' }}>
-                <a href="http://localhost:3000">
+                <a href={config.url.ELINE_URL}>
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
                 </a>
                 <form onSubmit={onSubmit}>
@@ -126,7 +126,7 @@ export default function Login() {
                     </div>
                 </form>
                 <div style={styles.divider}></div>
-                <p style={styles.bottomText}>Don't have an account? <a href="http://localhost:3000/createAccount/" style={styles.signUp}>Sign Up</a></p>
+                <p style={styles.bottomText}>Don't have an account? <a href={config.url.ELINE_URL + "/createAccount/"} style={styles.signUp}>Sign Up</a></p>
                 <img src={baseDesign} class="fixBottom"></img>
             </div>
         )

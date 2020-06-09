@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { config } from '../Constants';
 
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
@@ -50,12 +51,10 @@ export const logoutUser = () => dispatch => {
 export const verifyAuth = () => dispatch => {
     dispatch(requestVerify());
 
-    axios.get('http://localhost:5000/login/verifySession', {withCredentials: true})
+    axios.get(config.url.API_URL + '/login/verifySession', {withCredentials: true})
     .then(res => {
-        console.log(res);
         dispatch(receiveVerify(res.data));
     }).catch(e => {
-        console.log(e);
         dispatch(receiveVerifyFailure());
     });
 };

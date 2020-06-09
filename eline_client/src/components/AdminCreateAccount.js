@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import axios from 'axios';
 import { verifyAdminAuth } from "../actions";
+import { config } from '../Constants';
+
 const logo = require('../graphics/eline.png')
 const baseDesign = require('../graphics/myhumps.png')
 
@@ -49,13 +51,11 @@ function AdminCreateAccount() {
             storeId: storeId,
         }
 
-        axios.post('http://localhost:5000/admin/add', admin)
+        axios.post(config.url.API_URL + '/admin/add', admin)
         .then(res => {
-            console.log(res.data);
             window.location = '/admin/login'
         }).catch(e => {
             alert("StoreId is incorrect or email already exists")
-            console.log(e);
         });
     }
 
@@ -90,7 +90,7 @@ function AdminCreateAccount() {
         isVerifying ? <h2>Loading</h2>
         : isAdminAuthenticated ? <h2>You are already logged in as an admin for {storedStoreId}</h2>
         : <div style={{"textAlign": 'center'}}>
-            <a href="http://localhost:3000">
+            <a href={config.url.ELINE_URL}>
                     <img src={logo} class="elineLogo" style={styles.elineLogo}></img>
             </a>
             <p style={styles.adminText}>Create New Admin</p>

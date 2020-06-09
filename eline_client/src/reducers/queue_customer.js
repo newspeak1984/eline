@@ -4,7 +4,7 @@ import {
     ADD_TO_QUEUE_REQUEST,
     REMOVE_FROM_QUEUE,
     MOVE_UP_IN_QUEUE,
-    SET_INITIAL_POSITION,
+    SET_POSITION,
     WAIT_FOR_ARRIVAL
 } from "../actions";
 
@@ -49,7 +49,7 @@ export default (state = {
                 ...state,
                 placement: state.placement - 1
             }
-        case SET_INITIAL_POSITION:
+        case SET_POSITION:
             return {
                 ...state,
                 placement: action.pos

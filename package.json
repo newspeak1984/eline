@@ -13,10 +13,11 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "concurrently \"cd backend && nodemon server.js\" \"cd eline_client && npm start\"",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "concurrently \"cd backend && nodemon server.js\" \"cd eline_client && npm start\"",
+    "server": "cd backend && nodemon server.js",
+    "client": "cd eline_client && npm start",
+    "start": "cd backend && node server.js",
+    "heroku-postbuild": "cd eline_client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "eslintConfig": {
     "extends": "react-app"

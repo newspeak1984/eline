@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const MongoStore = require('connect-mongo')(session);
 const socket = require('socket.io');
 let Store = require('./models/store_model');
@@ -11,33 +12,44 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+let origin =[];
+if (process.env.NODE_ENV == 'production') {
+    origin = ['https://e-line-app.herokuapp.com/'];
+} else if (process.env.NODE_ENV == 'development') {
+    origin = ['http://localhost:5000', 'http://localhost:3000']
+}
+
 app.use(cors({
-    origin: ['http://localhost:5000', 'http://localhost:3000'],
+    origin: origin,
     methods: ['GET', 'POST'],
     credentials: true // enable set cookie
 }));
 app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
-// add try catch? also should whitelist more IP addresses when this goes to prod
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 connection.once('open', () => {
     console.log("MongoDB database connection established successfully");
 });
 
+const store = new MongoDBStore({
+    uri: uri,
+    collection: 'sessions'
+  });
+
 //use sessions for tracking logins
 app.set('trust proxy', 1);
-var MemoryStore = session.MemoryStore;
+// var MemoryStore = session.MemoryStore;
 app.use(session({
     name: 'backend.sid',
     secret: 'yah yeet',
     resave: false,
     saveUninitialized: true,
-    store: new MemoryStore(),
+    store: store,
     cookie: {
-        // change this later when we deploy
-        //secure: true, 
+        // TODO change this later when we deploy
+        // secure: true, 
         maxAge: 60 * 60 * 1000 * 2
     }
 }));
@@ -78,7 +90,7 @@ function addUserToLine(customerId, storeId) {
             if (store.queue.indexOf(customerId) === -1) {
                 store.queue.push(customerId);
             }
-            // check to see if its at max cap
+            // TODO check to see if its at max cap
         }
     })
 }
@@ -93,6 +105,7 @@ function getIndexofUser(customerId, storeId) {
             }
         }
     }
+    return -1;
 }
 
 function getNext(storeId) {
@@ -104,7 +117,6 @@ function getNext(storeId) {
                 return first;
             }
             else {
-                console.log('No Customers in Line');
                 return null;
             }
         }
@@ -117,10 +129,6 @@ function removeCustomer(customerId, storeId) {
             let index = store.queue.indexOf(customerId);
             if (index > -1) {
                 store.queue.splice(index, 1);
-                console.log('CUSTOMER REMOVED')
-            }
-            else {
-                console.log('Customer not found in line');
             }
         }
     })
@@ -141,6 +149,16 @@ app.use('/store', storeRouter);
 app.use('/admin', adminRouter);
 app.use('/profile', profileRouter);
 
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(express.static(('../eline_client/build')));
+      
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+      res.sendFile('../eline_client/build', 'index.html');
+    });
+  }
+
 let server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
@@ -153,14 +171,10 @@ io.on('connection', (socket) => {
 
     socket.on('enter', (data) => {
         //user presses button to get inline
-        //make changes to add to circular buffer with data (should contain customerId)
-        //emit line size at time of entry to specific user so
-        console.log("enter: " + JSON.stringify(data));
-        // FIXME: event received twice??? first with store and customer, then right after with just store????
         addUserToLine(data.customerId, data.storeId);
         index = getIndexofUser(data.customerId, data.storeId)
         customer = (data.customerId) ? data.customerId : customer
-        io.sockets.emit('initialPosition', {
+        io.sockets.emit('getPosition', {
             index: index,
             customerId: data.customerId,
             storeId: data.storeId
@@ -176,18 +190,20 @@ io.on('connection', (socket) => {
             storeId: data
         }
         io.sockets.emit('getNext', nextCustomer);
-        //set up getNext listeners on admin(display who is next) AND users(reduce their position in line by 1)
     })
 
     socket.on('leaveLine', (data) => {
-        console.log('leaveLine', data.storeId, data.customerId, data.index, data.isAllowedIn);
         removeCustomer(data.customerId, data.storeId);
         io.sockets.emit('leaveLine', {storeId: data.storeId, index: data.index, isAllowedIn: data.isAllowedIn})
     })
 
     socket.on('customerArrived', (data) => {
-        console.log('customerArrived', data)
         io.sockets.emit('customerArrived', data);
+    })
+
+    socket.on('removeCustomer', (data) => {
+        console.log('removeCustomer', data)
+        io.sockets.emit('removeCustomer', data);
     })
 });
 
